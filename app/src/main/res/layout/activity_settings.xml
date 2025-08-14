@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <Toolbar
+        android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:title="@string/settings"
@@ -43,6 +44,7 @@
             style="@style/SettingsActivityTextStyle"/>
 
         <ImageView
+            android:id="@+id/shareApplicationButton"
             android:src="@drawable/ic_share"
             style="@style/SettingsActivityIconStyle"/>
 
@@ -59,6 +61,7 @@
             style="@style/SettingsActivityTextStyle"/>
 
         <ImageView
+            android:id="@+id/contactSupportButton"
             style="@style/SettingsActivityIconStyle"
             android:src="@drawable/ic_support" />
 
@@ -75,6 +78,7 @@
             style="@style/SettingsActivityTextStyle"/>
 
         <ImageView
+            android:id="@+id/userAgreementButton"
             style="@style/SettingsActivityIconStyle"
             android:src="@drawable/ic_arrow_forward" />
 
