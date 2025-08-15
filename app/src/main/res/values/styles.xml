@@ -35,7 +35,7 @@
     <style name="SettingsActivityToolbarTitleStyle">
         <item name="android:textSize">@dimen/big_text_size</item>
         <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight">500</item>
     </style>
 </resources>
