@@ -14,74 +14,55 @@
         android:contentInsetStartWithNavigation="64dp"
         android:titleTextAppearance="@style/SettingsActivityToolbarTitleStyle"/>
 
-    <LinearLayout
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/default_padding"
-        android:layout_marginTop="24dp">
+        android:layout_height="wrap_content"
+        android:text="@string/dark_theme"
+        android:paddingVertical="20dp"
+        android:paddingHorizontal="16dp"
+        android:textSize="@dimen/small_text_size"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorPrimary"/>
 
-        <TextView
-            android:text="@string/dark_theme"
-            style="@style/SettingsActivityTextStyle"/>
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="15dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shareApplicationButton"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/default_padding">
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_share"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
+        android:text="@string/share_app"
+        android:textSize="@dimen/small_text_size"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorPrimary"/>
 
-        <TextView
-            android:text="@string/share_app"
-            style="@style/SettingsActivityTextStyle"/>
-
-        <ImageView
-            android:id="@+id/shareApplicationButton"
-            android:src="@drawable/ic_share"
-            style="@style/SettingsActivityIconStyle"/>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/contactSupportButton"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/default_padding">
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_support"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
+        android:text="@string/contact_support"
+        android:textSize="@dimen/small_text_size"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorPrimary"/>
 
-        <TextView
-            android:text="@string/contact_support"
-            style="@style/SettingsActivityTextStyle"/>
-
-        <ImageView
-            android:id="@+id/contactSupportButton"
-            style="@style/SettingsActivityIconStyle"
-            android:src="@drawable/ic_support" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/userAgreementButton"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/default_padding">
-
-        <TextView
-            android:text="@string/user_agreement"
-            style="@style/SettingsActivityTextStyle"/>
-
-        <ImageView
-            android:id="@+id/userAgreementButton"
-            style="@style/SettingsActivityIconStyle"
-            android:src="@drawable/ic_arrow_forward" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_forward"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
+        android:text="@string/user_agreement"
+        android:textSize="@dimen/small_text_size"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorPrimary"/>
 
 </LinearLayout>

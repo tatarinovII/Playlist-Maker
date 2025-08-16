@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 
@@ -14,9 +15,9 @@ class SettingsActivity: AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         val toolBar = findViewById<Toolbar>(R.id.toolBar)
-        val userAgreementButton = findViewById<ImageView>(R.id.userAgreementButton)
-        val contactSupportButton = findViewById<ImageView>(R.id.contactSupportButton)
-        val shareApplicationButton = findViewById<ImageView>(R.id.shareApplicationButton)
+        val userAgreementButton = findViewById<TextView>(R.id.userAgreementButton)
+        val contactSupportButton = findViewById<TextView>(R.id.contactSupportButton)
+        val shareApplicationButton = findViewById<TextView>(R.id.shareApplicationButton)
 
         toolBar.setNavigationOnClickListener {
             finish()

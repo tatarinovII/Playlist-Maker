@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 
 class SearchActivity : AppCompatActivity() {
@@ -44,7 +45,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                bClear.visibility = clearButtonVisibility(s)
+                bClear.isVisible = !s.isNullOrEmpty()
                 searchText = etSearch.text.toString()
             }
 
@@ -55,13 +56,6 @@ class SearchActivity : AppCompatActivity() {
         }
         etSearch.addTextChangedListener(textWatcher)
 
-    }
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
