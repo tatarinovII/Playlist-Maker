@@ -4,86 +4,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/blue">
+    android:background="?attr/backgroundColor"
+    android:paddingBottom="28dp">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="14dp">
+        app:title="@string/app_name"
+        app:titleTextAppearance="@style/MainActivityTitleStyle"
+        app:titleTextColor="@color/white"
+        android:layout_marginBottom="20dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="@dimen/big_text_size"
-            android:textStyle="bold"
-            android:textColor="@color/white"/>
-    </LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bSearch"
+        style="@style/MainActivityButtonStyle"
+        android:text="@string/search"
+        app:icon="@drawable/ic_search"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="28dp"
-        android:orientation="vertical">
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bLibrary"
+        android:text="@string/library"
+        app:icon="@drawable/ic_library"
+        style="@style/MainActivityButtonStyle"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bSearch"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="24dp"
-            app:cornerRadius="@dimen/corner_radius"
-            android:layout_weight="1"
-            android:foreground="?attr/selectableItemBackground"
-            android:backgroundTint="@color/white"
-            app:icon="@drawable/ic_search"
-            app:iconGravity="textStart"
-            android:text="@string/search"
-            android:textSize="@dimen/big_text_size"
-            app:iconPadding="8dp"
-            android:textAllCaps="false"
-            android:textColor="@color/black"
-            app:iconTint="@color/black"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bLibrary"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cornerRadius="@dimen/corner_radius"
-            android:text="@string/library"
-            app:icon="@drawable/ic_library"
-            android:foreground="?attr/selectableItemBackground"
-            app:iconPadding="8dp"
-            app:iconTint="@color/black"
-            app:iconGravity="textStart"
-            android:textSize="@dimen/big_text_size"
-            android:textAllCaps="false"
-            android:textColor="@color/black"
-            android:layout_marginTop="@dimen/default_padding"
-            android:layout_weight="1"
-            android:backgroundTint="@color/white"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/bSettings"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cornerRadius="@dimen/corner_radius"
-            android:layout_marginTop="@dimen/default_padding"
-            android:layout_weight="1"
-            android:backgroundTint="@color/white"
-            app:icon="@drawable/ic_settings"
-            app:iconGravity="textStart"
-            android:foreground="?attr/selectableItemBackground"
-            android:text="@string/settings"
-            android:textSize="@dimen/big_text_size"
-            app:iconPadding="8dp"
-            android:textAllCaps="false"
-            android:textColor="@color/black"
-            app:iconTint="@color/black"/>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bSettings"
+        app:icon="@drawable/ic_settings"
+        android:text="@string/settings"
+        style="@style/MainActivityButtonStyle"/>
 
     </LinearLayout>
 
-</LinearLayout>

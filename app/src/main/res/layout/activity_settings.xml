@@ -5,126 +5,64 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <Toolbar
+        android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:orientation="horizontal">
+        android:title="@string/settings"
+        android:navigationIcon="@drawable/ic_arrow"
+        android:contentInsetStartWithNavigation="64dp"
+        android:titleTextAppearance="@style/SettingsActivityToolbarTitleStyle"/>
 
-        <ImageView
-            android:id="@+id/bBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:foreground="?attr/selectableItemBackground"
-            android:src="@drawable/ic_arrow"
-            android:layout_marginTop="18dp"
-            android:layout_marginStart="@dimen/default_padding"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="14dp"
-            android:text="Настройки"
-            android:textSize="@dimen/big_text_size"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/default_padding"
-        android:layout_marginTop="24dp">
+        android:layout_height="wrap_content"
+        android:text="@string/dark_theme"
+        android:paddingVertical="20dp"
+        android:paddingHorizontal="16dp"
+        android:textSize="@dimen/small_text_size"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorPrimary"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/dark_theme"
-            android:layout_gravity="center_vertical"
-            android:textSize="@dimen/small_text_size"
-            android:layout_weight="1"
-            android:textColor="@color/black"/>
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="15dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/shareApplicationButton"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/default_padding">
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_share"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
+        android:text="@string/share_app"
+        android:textSize="@dimen/small_text_size"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorPrimary"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/share_app"
-            android:layout_gravity="center_vertical"
-            android:textSize="@dimen/small_text_size"
-            android:layout_weight="1"
-            android:textColor="@color/black"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/margin_end"
-            android:src="@drawable/ic_share" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/contactSupportButton"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/default_padding">
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_support"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
+        android:text="@string/contact_support"
+        android:textSize="@dimen/small_text_size"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorPrimary"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/contact_support"
-            android:layout_gravity="center_vertical"
-            android:textSize="@dimen/small_text_size"
-            android:layout_weight="1"
-            android:textColor="@color/black"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/margin_end"
-            android:src="@drawable/ic_support" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/userAgreementButton"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/default_padding">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/user_agreement"
-            android:layout_gravity="center_vertical"
-            android:textSize="@dimen/small_text_size"
-            android:layout_weight="1"
-            android:textColor="@color/black"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/margin_end"
-            android:src="@drawable/ic_arrow_forward" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_forward"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="20dp"
+        android:text="@string/user_agreement"
+        android:textSize="@dimen/small_text_size"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorPrimary"/>
 
 </LinearLayout>
