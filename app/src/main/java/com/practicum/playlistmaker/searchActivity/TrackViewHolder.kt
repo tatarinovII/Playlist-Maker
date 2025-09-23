@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.searchActivity
 
 import android.content.Context
 import android.util.TypedValue
@@ -8,6 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.models.Track
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TrackViewHolder(item: View) : RecyclerView.ViewHolder(item) {
 
@@ -19,14 +23,14 @@ class TrackViewHolder(item: View) : RecyclerView.ViewHolder(item) {
     fun bind(track: Track) {
         tvSongName.text = track.trackName
         tvArtistName.text = track.artistName
-        tvSongDuration.text = track.trackTime
+        tvSongDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(293000L)
         Glide.with(itemView.context).load(track.artworkUrl100)
             .transform(RoundedCorners(dpToPx(2f, itemView.context))).fitCenter()
             .placeholder(R.drawable.ic_placeholder_album).into(image)
 
     }
 
-    fun dpToPx(dp: Float, context: Context): Int {
+    private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics
         ).toInt()

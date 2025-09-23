@@ -16,7 +16,7 @@
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".SearchActivity"
+            android:name=".searchActivity.SearchActivity"
             android:exported="false" />
         <activity
             android:name=".LibraryActivity"

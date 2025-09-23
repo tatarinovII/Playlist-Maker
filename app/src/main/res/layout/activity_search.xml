@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+    tools:context=".searchActivity.SearchActivity">
     
     <Toolbar
         android:layout_width="match_parent"
@@ -45,7 +45,9 @@
                 android:drawableStart="@drawable/ic_search_2"
                 android:drawableTint="?attr/colorSecondary"
                 android:paddingStart="12dp"
-                android:drawablePadding="8dp"/>
+                android:drawablePadding="8dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
 
             <ImageView
                 android:id="@+id/bClear"
@@ -68,5 +70,56 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/default_padding"
-        android:layout_marginHorizontal="13dp"/>
+        android:layout_marginHorizontal="13dp"
+        tools:visibility="gone"/>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/llErrorInternetConnection"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="102dp"
+            android:layout_gravity="center"
+            app:drawableTopCompat="@drawable/ic_connection_error"
+            android:text="@string/search_connection_error"
+            android:drawablePadding="@dimen/default_padding"
+            android:textAlignment="center"
+            android:textAppearance="@style/SearchActivityErrorTextStyle"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bRefreshPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center"
+            app:cornerRadius="54dp"
+            android:text="@string/refresh"
+            android:backgroundTint="?attr/colorPrimary"
+            android:textAllCaps="false"
+            android:fontFamily="@font/ys_display_medium"
+            android:textFontWeight="500"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/tvEmptySearchOutput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/SearchActivityErrorTextStyle"
+        android:layout_marginTop="102dp"
+        android:text="@string/no_search_output"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:drawablePadding="16dp"
+        app:drawableTopCompat="@drawable/ic_empty_search_output" />
+
+
 </LinearLayout>
