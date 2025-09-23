@@ -116,6 +116,8 @@ class SearchActivity : AppCompatActivity() {
                 getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(etSearch.windowToken, 0)
             list.clear()
+            tvEmptySearchOutput.visibility = View.GONE
+            llConnectionError.visibility = View.GONE
             adapter.notifyDataSetChanged()
         }
     }
