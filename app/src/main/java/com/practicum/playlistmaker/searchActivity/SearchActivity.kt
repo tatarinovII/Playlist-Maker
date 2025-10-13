@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.searchActivity
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -33,7 +34,6 @@ class SearchActivity : AppCompatActivity() {
 
     private val retrofit = RetrofitApi().retrofitApi
     private val songApi = retrofit.create(SongApi::class.java)
-
     private var searchText: String = SEARCH_TEXT_DEF
     private lateinit var list: ArrayList<Track>
     private lateinit var etSearch: EditText
@@ -42,13 +42,23 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var tvEmptySearchOutput: TextView
     private lateinit var recycleView: RecyclerView
     private lateinit var bClear: ImageView
-
-    private val adapter = TrackAdapter()
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var adapter: TrackAdapter
+    private lateinit var historyAdapter: TrackAdapter
+    private lateinit var bClearHistory: Button
+    private lateinit var llSearchHistory: LinearLayout
+    private lateinit var rvSearchHistory: RecyclerView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        sharedPreferences = getSharedPreferences("MYPREFS", MODE_PRIVATE)
+
+        adapter = TrackAdapter() { track ->
+            TrackPreferences(sharedPreferences).addToSharedPrefs(track)
+        }
         list = ArrayList<Track>()
         adapter.list = list
 
@@ -56,7 +66,6 @@ class SearchActivity : AppCompatActivity() {
         etSearch.setText(searchText)
 
         setUpClickListeners()
-
 
         val textWatcher = object : TextWatcher {
 
@@ -67,6 +76,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 bClear.isVisible = !s.isNullOrEmpty()
                 searchText = etSearch.text.toString()
+                if (etSearch.hasFocus() && s?.isEmpty() == true) showSearchHistory()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -95,12 +105,22 @@ class SearchActivity : AppCompatActivity() {
         tvEmptySearchOutput = findViewById<TextView>(R.id.tvEmptySearchOutput)
         bRefreshPage = findViewById<Button>(R.id.bRefreshPage)
         recycleView = findViewById<RecyclerView>(R.id.rcView)
+        etSearch = findViewById<EditText>(R.id.etSearch)
         bClear = findViewById<ImageView>(R.id.bClear)
+        bClearHistory = findViewById<Button>(R.id.bClearSearchHistory)
+        llSearchHistory = findViewById<LinearLayout>(R.id.llSearchHistory)
+        rvSearchHistory = findViewById<RecyclerView>(R.id.rvSearchHistory)
         recycleView.layoutManager = LinearLayoutManager(this)
         recycleView.adapter = adapter
 
+        historyAdapter = TrackAdapter() { item ->
+            TrackPreferences(sharedPreferences).addToSharedPrefs(item)
+            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            historyAdapter.notifyDataSetChanged()
+        }
+
         etSearch.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE && etSearch.text.isNotEmpty()) {
                 loadData()
             }
             false
@@ -120,6 +140,18 @@ class SearchActivity : AppCompatActivity() {
             llConnectionError.visibility = View.GONE
             adapter.notifyDataSetChanged()
         }
+
+        etSearch.setOnFocusChangeListener() { view, hasFocus ->
+            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            if (hasFocus && etSearch.text.isEmpty()) showSearchHistory()
+        }
+
+        bClearHistory.setOnClickListener {
+            TrackPreferences(sharedPreferences).clear()
+            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            historyAdapter.notifyDataSetChanged()
+            llSearchHistory.visibility = View.GONE
+        }
     }
 
     private fun loadData() {
@@ -127,10 +159,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onResponse(
                 call: Call<SongSearchResponse>, response: Response<SongSearchResponse>
             ) {
-                recycleView.visibility = View.VISIBLE
-                tvEmptySearchOutput.visibility = View.GONE
-                llConnectionError.visibility = View.GONE
-                bRefreshPage.visibility = View.GONE
+                showSearchResult()
                 when (response.code()) {
                     200 -> {
                         list.clear()
@@ -138,20 +167,51 @@ class SearchActivity : AppCompatActivity() {
                             list.addAll(response.body()?.results!!)
                             adapter.notifyDataSetChanged()
                         }
-                        if (list.isEmpty()) {
-                            recycleView.visibility = View.GONE
-                            tvEmptySearchOutput.visibility = View.VISIBLE
+                        if (list.isEmpty() && etSearch.text.isNotEmpty()) {
+                            showSearchEmptyResult()
                         }
                     }
                 }
             }
 
             override fun onFailure(call: Call<SongSearchResponse>, t: Throwable) {
-                recycleView.visibility = View.GONE
-                llConnectionError.visibility = View.VISIBLE
-                bRefreshPage.visibility = View.VISIBLE
+                showConnectionError()
             }
         })
+    }
+
+    private fun showSearchResult() {
+        recycleView.visibility = View.VISIBLE
+        llConnectionError.visibility = View.GONE
+        tvEmptySearchOutput.visibility = View.GONE
+        llSearchHistory.visibility = View.GONE
+    }
+
+    private fun showSearchEmptyResult() {
+        recycleView.visibility = View.GONE
+        llConnectionError.visibility = View.GONE
+        tvEmptySearchOutput.visibility = View.VISIBLE
+        llSearchHistory.visibility = View.GONE
+    }
+
+    private fun showConnectionError() {
+        recycleView.visibility = View.GONE
+        llConnectionError.visibility = View.VISIBLE
+        tvEmptySearchOutput.visibility = View.GONE
+        llSearchHistory.visibility = View.GONE
+    }
+
+    private fun showSearchHistory() {
+        rvSearchHistory.layoutManager = LinearLayoutManager(this)
+        rvSearchHistory.adapter = historyAdapter
+        historyAdapter.list = TrackPreferences(sharedPreferences).read()
+
+        if (TrackPreferences(sharedPreferences).read().isNotEmpty()) {
+            recycleView.visibility = View.GONE
+            llConnectionError.visibility = View.GONE
+            tvEmptySearchOutput.visibility = View.GONE
+            llSearchHistory.visibility = View.VISIBLE
+        }
     }
 
 }

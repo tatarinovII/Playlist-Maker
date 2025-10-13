@@ -3,12 +3,12 @@ package com.practicum.playlistmaker
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.switchmaterial.SwitchMaterial
 
-class SettingsActivity: AppCompatActivity() {
+class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +18,11 @@ class SettingsActivity: AppCompatActivity() {
         val userAgreementButton = findViewById<TextView>(R.id.userAgreementButton)
         val contactSupportButton = findViewById<TextView>(R.id.contactSupportButton)
         val shareApplicationButton = findViewById<TextView>(R.id.shareApplicationButton)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+
+        if ((applicationContext as App).darkTheme) {
+            themeSwitcher.setChecked(true)
+        }
 
         toolBar.setNavigationOnClickListener {
             finish()
@@ -40,13 +45,17 @@ class SettingsActivity: AppCompatActivity() {
             intent.data = Uri.parse(url)
             startActivity(intent)
         }
-        
-        shareApplicationButton.setOnClickListener { 
+
+        shareApplicationButton.setOnClickListener {
             val message = getString(R.string.share_url)
             val intent = Intent(Intent.ACTION_SEND)
             intent.setType("text/plain")
             intent.putExtra(Intent.EXTRA_TEXT, message)
             startActivity(intent)
+        }
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
         }
     }
 }
