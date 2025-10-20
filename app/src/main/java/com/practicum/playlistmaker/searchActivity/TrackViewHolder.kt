@@ -26,7 +26,8 @@ class TrackViewHolder(item: View, private val onItemClick: (Track) -> Unit) :
     fun bind(track: Track) {
         tvSongName.text = track.trackName
         tvArtistName.text = track.artistName
-        tvSongDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(293000L)
+        tvSongDuration.text =
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
         Glide.with(itemView.context).load(track.artworkUrl100)
             .transform(RoundedCorners(dpToPx(2f, itemView.context))).fitCenter()
             .placeholder(R.drawable.ic_placeholder_album).into(image)
