@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.searchActivity
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.PlayerActivity
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.models.Track
 import com.practicum.playlistmaker.retrofit.RetrofitApi
@@ -58,6 +60,9 @@ class SearchActivity : AppCompatActivity() {
 
         adapter = TrackAdapter() { track ->
             TrackPreferences(sharedPreferences).addToSharedPrefs(track)
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("TRACK", track)
+            startActivity(intent)
         }
         list = ArrayList<Track>()
         adapter.list = list
@@ -117,6 +122,9 @@ class SearchActivity : AppCompatActivity() {
             TrackPreferences(sharedPreferences).addToSharedPrefs(item)
             historyAdapter.list = TrackPreferences(sharedPreferences).read()
             historyAdapter.notifyDataSetChanged()
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("TRACK", item)
+            startActivity(intent)
         }
 
         etSearch.setOnEditorActionListener { _, actionId, _ ->
