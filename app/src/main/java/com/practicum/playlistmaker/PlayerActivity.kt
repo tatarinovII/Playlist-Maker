@@ -15,13 +15,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
-
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-    }
     private val updateTimeRunnable = object : Runnable {
         override fun run() {
             updateCurrentTime()
@@ -67,7 +60,7 @@ class PlayerActivity : AppCompatActivity() {
             }
             tvTrackName.text = track.trackName
             tvArtistName.text = track.artistName
-            tvTrackCurrentTime.text = "00:00"
+            tvTrackCurrentTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
             tvDuration.text =
                 SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
             tvGenre.text = track.primaryGenreName
@@ -112,6 +105,7 @@ class PlayerActivity : AppCompatActivity() {
         mediaPlayer.release()
         handler.removeCallbacks(updateTimeRunnable)
     }
+
     private fun initializeViews() {
         ivAlbumPhoto = findViewById(R.id.ivAlbumPhoto)
         tvTrackName = findViewById(R.id.trackName)
@@ -129,10 +123,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun playbackControl() {
-        when(playerState) {
+        when (playerState) {
             STATE_PLAYING -> {
                 pausePlayer()
             }
+
             STATE_PREPARED, STATE_PAUSED -> {
                 startPlayer()
             }
@@ -148,7 +143,7 @@ class PlayerActivity : AppCompatActivity() {
         }
         mediaPlayer.setOnCompletionListener {
             playerState = STATE_PREPARED
-            tvTrackCurrentTime.text = "00:00"
+            tvTrackCurrentTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
             ibPlay.setImageResource(R.drawable.ic_button_play)
             handler.removeCallbacks(updateTimeRunnable)
         }
@@ -170,7 +165,15 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun updateCurrentTime() {
         if (mediaPlayer.isPlaying) {
-            tvTrackCurrentTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+            tvTrackCurrentTime.text =
+                SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
         }
+    }
+
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
     }
 }

@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.searchActivity
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -17,6 +16,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,12 +32,6 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
-    companion object {
-        private const val SEARCH_TEXT_DEF = ""
-        private const val SEARCH_TEXT = "SEARCH_TEXT"
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-    }
-
     private val retrofit = RetrofitApi().retrofitApi
     private val songApi = retrofit.create(SongApi::class.java)
     private var searchText: String = SEARCH_TEXT_DEF
@@ -102,6 +96,11 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("SEARCH_TEXT", searchText)
@@ -149,8 +148,7 @@ class SearchActivity : AppCompatActivity() {
 
         bClear.setOnClickListener {
             etSearch.setText("")
-            val inputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(etSearch.windowToken, 0)
             list.clear()
             tvEmptySearchOutput.visibility = View.GONE
@@ -168,6 +166,9 @@ class SearchActivity : AppCompatActivity() {
             historyAdapter.list = TrackPreferences(sharedPreferences).read()
             historyAdapter.notifyDataSetChanged()
             llSearchHistory.visibility = View.GONE
+        }
+        findViewById<Toolbar>(R.id.tbSearch).setOnClickListener {
+            finish()
         }
     }
 
@@ -249,4 +250,9 @@ class SearchActivity : AppCompatActivity() {
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
+    companion object {
+        private const val SEARCH_TEXT_DEF = ""
+        private const val SEARCH_TEXT = "SEARCH_TEXT"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+    }
 }
