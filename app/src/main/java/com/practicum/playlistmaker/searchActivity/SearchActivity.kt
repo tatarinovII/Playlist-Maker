@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,6 +15,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -30,8 +33,9 @@ import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
     companion object {
-        const val SEARCH_TEXT_DEF = ""
-        const val SEARCH_TEXT = "SEARCH_TEXT"
+        private const val SEARCH_TEXT_DEF = ""
+        private const val SEARCH_TEXT = "SEARCH_TEXT"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
     private val retrofit = RetrofitApi().retrofitApi
@@ -50,6 +54,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var bClearHistory: Button
     private lateinit var llSearchHistory: LinearLayout
     private lateinit var rvSearchHistory: RecyclerView
+    private lateinit var progressBar: ProgressBar
+    private val searchRunnable = Runnable { loadData() }
+    private val handler = Handler(Looper.getMainLooper())
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +89,7 @@ class SearchActivity : AppCompatActivity() {
                 bClear.isVisible = !s.isNullOrEmpty()
                 searchText = etSearch.text.toString()
                 if (etSearch.hasFocus() && s?.isEmpty() == true) showSearchHistory()
+                searchDebounce()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -117,6 +125,7 @@ class SearchActivity : AppCompatActivity() {
         rvSearchHistory = findViewById<RecyclerView>(R.id.rvSearchHistory)
         recycleView.layoutManager = LinearLayoutManager(this)
         recycleView.adapter = adapter
+        progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
         historyAdapter = TrackAdapter() { item ->
             TrackPreferences(sharedPreferences).addToSharedPrefs(item)
@@ -141,7 +150,7 @@ class SearchActivity : AppCompatActivity() {
         bClear.setOnClickListener {
             etSearch.setText("")
             val inputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(etSearch.windowToken, 0)
             list.clear()
             tvEmptySearchOutput.visibility = View.GONE
@@ -163,6 +172,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
+        showProgressBar()
         songApi.search(etSearch.text.toString()).enqueue(object : Callback<SongSearchResponse> {
             override fun onResponse(
                 call: Call<SongSearchResponse>, response: Response<SongSearchResponse>
@@ -193,6 +203,15 @@ class SearchActivity : AppCompatActivity() {
         llConnectionError.visibility = View.GONE
         tvEmptySearchOutput.visibility = View.GONE
         llSearchHistory.visibility = View.GONE
+        progressBar.visibility = View.GONE
+    }
+
+    private fun showProgressBar() {
+        recycleView.visibility = View.GONE
+        llConnectionError.visibility = View.GONE
+        tvEmptySearchOutput.visibility = View.GONE
+        llSearchHistory.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
     }
 
     private fun showSearchEmptyResult() {
@@ -200,6 +219,7 @@ class SearchActivity : AppCompatActivity() {
         llConnectionError.visibility = View.GONE
         tvEmptySearchOutput.visibility = View.VISIBLE
         llSearchHistory.visibility = View.GONE
+        progressBar.visibility = View.GONE
     }
 
     private fun showConnectionError() {
@@ -207,6 +227,7 @@ class SearchActivity : AppCompatActivity() {
         llConnectionError.visibility = View.VISIBLE
         tvEmptySearchOutput.visibility = View.GONE
         llSearchHistory.visibility = View.GONE
+        progressBar.visibility = View.GONE
     }
 
     private fun showSearchHistory() {
@@ -219,7 +240,13 @@ class SearchActivity : AppCompatActivity() {
             llConnectionError.visibility = View.GONE
             tvEmptySearchOutput.visibility = View.GONE
             llSearchHistory.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
         }
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
 }
