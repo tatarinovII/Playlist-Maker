@@ -1,9 +1,9 @@
-package com.practicum.playlistmaker.searchActivity
+package com.practicum.playlistmaker.data.sharedprefs
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
-import com.practicum.playlistmaker.models.Track
+import com.practicum.playlistmaker.domain.models.Track
 
 class TrackPreferences(
     val sharedPrefs: SharedPreferences

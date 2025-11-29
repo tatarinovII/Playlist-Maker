@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.searchActivity
+package com.practicum.playlistmaker.ui.search
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -21,21 +21,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.PlayerActivity
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.models.Track
-import com.practicum.playlistmaker.retrofit.RetrofitApi
-import com.practicum.playlistmaker.retrofit.SongApi
-import com.practicum.playlistmaker.retrofit.SongSearchResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.data.sharedprefs.TrackPreferences
+import com.practicum.playlistmaker.domain.api.TrackIterator
+import com.practicum.playlistmaker.ui.player.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
-    private val retrofit = RetrofitApi().retrofitApi
-    private val songApi = retrofit.create(SongApi::class.java)
     private var searchText: String = SEARCH_TEXT_DEF
-    private lateinit var list: ArrayList<Track>
+    private lateinit var tracks: ArrayList<Track>
     private lateinit var etSearch: EditText
     private lateinit var llConnectionError: LinearLayout
     private lateinit var bRefreshPage: Button
@@ -52,6 +47,7 @@ class SearchActivity : AppCompatActivity() {
     private val searchRunnable = Runnable { loadData() }
     private val handler = Handler(Looper.getMainLooper())
 
+    private val trackIterator = Creator.provideTracksIterator()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,8 +61,8 @@ class SearchActivity : AppCompatActivity() {
             intent.putExtra("TRACK", track)
             startActivity(intent)
         }
-        list = ArrayList<Track>()
-        adapter.list = list
+        tracks = ArrayList<Track>()
+        adapter.list = tracks
 
         etSearch = findViewById<EditText>(R.id.etSearch)
         etSearch.setText(searchText)
@@ -150,7 +146,7 @@ class SearchActivity : AppCompatActivity() {
             etSearch.setText("")
             val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(etSearch.windowToken, 0)
-            list.clear()
+            tracks.clear()
             tvEmptySearchOutput.visibility = View.GONE
             llConnectionError.visibility = View.GONE
             adapter.notifyDataSetChanged()
@@ -173,30 +169,29 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        showProgressBar()
-        songApi.search(etSearch.text.toString()).enqueue(object : Callback<SongSearchResponse> {
-            override fun onResponse(
-                call: Call<SongSearchResponse>, response: Response<SongSearchResponse>
-            ) {
-                showSearchResult()
-                when (response.code()) {
-                    200 -> {
-                        list.clear()
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            list.addAll(response.body()?.results!!)
-                            adapter.notifyDataSetChanged()
+        if (etSearch.text.isNotEmpty()) {
+            showProgressBar()
+            trackIterator.searchTracks(etSearch.text.toString(), object : TrackIterator.TracksConsumer {
+                override fun consume(foundTracks: List<Track>) {
+                    handler.post {
+                        showSearchResult()
+                        if (foundTracks != null) {
+                            tracks.clear()
+                            if (foundTracks.isNotEmpty()) {
+                                tracks.addAll(foundTracks)
+                            }
+                            if (tracks.isEmpty()) {
+                                showSearchEmptyResult()
+                            }
+                        } else {
+                            showConnectionError()
                         }
-                        if (list.isEmpty() && etSearch.text.isNotEmpty()) {
-                            showSearchEmptyResult()
-                        }
+                        adapter.notifyDataSetChanged()
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<SongSearchResponse>, t: Throwable) {
-                showConnectionError()
-            }
-        })
+            })
+        }
     }
 
     private fun showSearchResult() {
