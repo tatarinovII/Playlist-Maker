@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.ui.search
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -23,9 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.api.HistoryInteractor
+import com.practicum.playlistmaker.domain.api.TrackInteractor
 import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.data.sharedprefs.TrackPreferences
-import com.practicum.playlistmaker.domain.api.TrackIterator
 import com.practicum.playlistmaker.ui.player.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
@@ -37,7 +36,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var tvEmptySearchOutput: TextView
     private lateinit var recycleView: RecyclerView
     private lateinit var bClear: ImageView
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var bClearHistory: Button
@@ -46,17 +44,18 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private val searchRunnable = Runnable { loadData() }
     private val handler = Handler(Looper.getMainLooper())
+    private val trackIterator = Creator.provideTracksInteractor()
+    private lateinit var historyInteractor: HistoryInteractor
 
-    private val trackIterator = Creator.provideTracksIterator()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        sharedPreferences = getSharedPreferences("MYPREFS", MODE_PRIVATE)
+        historyInteractor = Creator.provideHistoryInteractor(applicationContext)
 
         adapter = TrackAdapter() { track ->
-            TrackPreferences(sharedPreferences).addToSharedPrefs(track)
+            historyInteractor.addTrackToHistory(track)
             val intent = Intent(this, PlayerActivity::class.java)
             intent.putExtra("TRACK", track)
             startActivity(intent)
@@ -123,8 +122,8 @@ class SearchActivity : AppCompatActivity() {
         progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
         historyAdapter = TrackAdapter() { item ->
-            TrackPreferences(sharedPreferences).addToSharedPrefs(item)
-            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            historyInteractor.addTrackToHistory(item)
+            historyAdapter.list = historyInteractor.getHistory()
             historyAdapter.notifyDataSetChanged()
             val intent = Intent(this, PlayerActivity::class.java)
             intent.putExtra("TRACK", item)
@@ -153,13 +152,13 @@ class SearchActivity : AppCompatActivity() {
         }
 
         etSearch.setOnFocusChangeListener() { view, hasFocus ->
-            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            historyAdapter.list = historyInteractor.getHistory()
             if (hasFocus && etSearch.text.isEmpty()) showSearchHistory()
         }
 
         bClearHistory.setOnClickListener {
-            TrackPreferences(sharedPreferences).clear()
-            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            historyInteractor.clearHistory()
+            historyAdapter.list = historyInteractor.getHistory()
             historyAdapter.notifyDataSetChanged()
             llSearchHistory.visibility = View.GONE
         }
@@ -171,26 +170,27 @@ class SearchActivity : AppCompatActivity() {
     private fun loadData() {
         if (etSearch.text.isNotEmpty()) {
             showProgressBar()
-            trackIterator.searchTracks(etSearch.text.toString(), object : TrackIterator.TracksConsumer {
-                override fun consume(foundTracks: List<Track>) {
-                    handler.post {
-                        showSearchResult()
-                        if (foundTracks != null) {
-                            tracks.clear()
-                            if (foundTracks.isNotEmpty()) {
-                                tracks.addAll(foundTracks)
+            trackIterator.searchTracks(
+                etSearch.text.toString(), object : TrackInteractor.TracksConsumer {
+                    override fun consume(foundTracks: List<Track>) {
+                        handler.post {
+                            showSearchResult()
+                            if (foundTracks != null) {
+                                tracks.clear()
+                                if (foundTracks.isNotEmpty()) {
+                                    tracks.addAll(foundTracks)
+                                }
+                                if (tracks.isEmpty()) {
+                                    showSearchEmptyResult()
+                                }
+                            } else {
+                                showConnectionError()
                             }
-                            if (tracks.isEmpty()) {
-                                showSearchEmptyResult()
-                            }
-                        } else {
-                            showConnectionError()
+                            adapter.notifyDataSetChanged()
                         }
-                        adapter.notifyDataSetChanged()
                     }
-                }
 
-            })
+                })
         }
     }
 
@@ -229,9 +229,9 @@ class SearchActivity : AppCompatActivity() {
     private fun showSearchHistory() {
         rvSearchHistory.layoutManager = LinearLayoutManager(this)
         rvSearchHistory.adapter = historyAdapter
-        historyAdapter.list = TrackPreferences(sharedPreferences).read()
+        historyAdapter.list = historyInteractor.getHistory()
 
-        if (TrackPreferences(sharedPreferences).read().isNotEmpty()) {
+        if (historyInteractor.getHistory().isNotEmpty()) {
             recycleView.visibility = View.GONE
             llConnectionError.visibility = View.GONE
             tvEmptySearchOutput.visibility = View.GONE

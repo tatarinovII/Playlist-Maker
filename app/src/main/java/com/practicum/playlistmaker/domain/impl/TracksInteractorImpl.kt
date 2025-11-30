@@ -1,16 +1,15 @@
 package com.practicum.playlistmaker.domain.impl
 
-import com.practicum.playlistmaker.domain.api.TrackIterator
+import com.practicum.playlistmaker.domain.api.TrackInteractor
 import com.practicum.playlistmaker.domain.api.TrackRepository
 import java.util.concurrent.Executors
 
-class TracksIteratorImpl(private val repository: TrackRepository) : TrackIterator {
+class TracksInteractorImpl(private val repository: TrackRepository) : TrackInteractor {
 
     private val executor = Executors.newCachedThreadPool()
 
     override fun searchTracks(
-        expression: String,
-        consumer: TrackIterator.TracksConsumer
+        expression: String, consumer: TrackInteractor.TracksConsumer
     ) {
         executor.execute {
             val tracks = repository.searchTracks(expression)

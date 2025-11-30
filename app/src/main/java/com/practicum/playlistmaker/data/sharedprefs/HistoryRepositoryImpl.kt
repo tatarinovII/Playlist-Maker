@@ -3,29 +3,31 @@ package com.practicum.playlistmaker.data.sharedprefs
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
+import com.practicum.playlistmaker.domain.api.HistoryRepository
 import com.practicum.playlistmaker.domain.models.Track
 
-class TrackPreferences(
+class HistoryRepositoryImpl(
     val sharedPrefs: SharedPreferences
-) {
-    fun addToSharedPrefs(newTrack: Track): Boolean {
-        val list = read().toMutableList()
-        if (list.size < 10 && !list.contains(newTrack)) {
-            list.add(0, newTrack)
+) : HistoryRepository {
+
+    override fun saveTrack(track: Track): Boolean {
+        val list = getHistory().toMutableList()
+        if (list.size < 10 && !list.contains(track)) {
+            list.add(0, track)
             if (list.size >= 10) list.removeAt(list.lastIndex)
-        } else if (list.size <= 10 && list.contains(newTrack)) {
-            list.remove(newTrack)
-            list.add(0, newTrack)
-        } else if (list.size >= 10 && !list.contains(newTrack)) {
+        } else if (list.size <= 10 && list.contains(track)) {
+            list.remove(track)
+            list.add(0, track)
+        } else if (list.size >= 10 && !list.contains(track)) {
             list.removeAt(list.lastIndex)
-            list.add(0, newTrack)
+            list.add(0, track)
         } else return false
 
         write(list)
         return true
     }
 
-    fun read(): List<Track> {
+    override fun getHistory(): List<Track> {
         val json = sharedPrefs.getString("TRACK_LIST", null) ?: return emptyList<Track>()
         return Gson().fromJson(json, Array<Track>::class.java).toList()
     }
@@ -35,7 +37,7 @@ class TrackPreferences(
         sharedPrefs.edit { putString("TRACK_LIST", json) }
     }
 
-    fun clear() {
+    override fun clearHistory() {
         sharedPrefs.edit { clear() }
     }
 }
