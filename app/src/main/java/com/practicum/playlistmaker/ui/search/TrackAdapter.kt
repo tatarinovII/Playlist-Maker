@@ -1,10 +1,10 @@
-package com.practicum.playlistmaker.searchActivity
+package com.practicum.playlistmaker.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.models.Track
+import com.practicum.playlistmaker.domain.models.Track
 
 class TrackAdapter(private val onItemClick: (Track) -> Unit) :
     RecyclerView.Adapter<TrackViewHolder>() {
