@@ -1,7 +1,6 @@
-package com.practicum.playlistmaker.searchActivity
+package com.practicum.playlistmaker.ui.search
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,28 +20,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.PlayerActivity
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.models.Track
-import com.practicum.playlistmaker.retrofit.RetrofitApi
-import com.practicum.playlistmaker.retrofit.SongApi
-import com.practicum.playlistmaker.retrofit.SongSearchResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.practicum.playlistmaker.domain.api.HistoryInteractor
+import com.practicum.playlistmaker.domain.api.TrackInteractor
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.ui.player.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
-    private val retrofit = RetrofitApi().retrofitApi
-    private val songApi = retrofit.create(SongApi::class.java)
     private var searchText: String = SEARCH_TEXT_DEF
-    private lateinit var list: ArrayList<Track>
+    private lateinit var tracks: ArrayList<Track>
     private lateinit var etSearch: EditText
     private lateinit var llConnectionError: LinearLayout
     private lateinit var bRefreshPage: Button
     private lateinit var tvEmptySearchOutput: TextView
     private lateinit var recycleView: RecyclerView
     private lateinit var bClear: ImageView
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
     private lateinit var bClearHistory: Button
@@ -51,22 +44,24 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private val searchRunnable = Runnable { loadData() }
     private val handler = Handler(Looper.getMainLooper())
+    private val trackIterator = Creator.provideTracksInteractor()
+    private lateinit var historyInteractor: HistoryInteractor
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        sharedPreferences = getSharedPreferences("MYPREFS", MODE_PRIVATE)
+        historyInteractor = Creator.provideHistoryInteractor(applicationContext)
 
         adapter = TrackAdapter() { track ->
-            TrackPreferences(sharedPreferences).addToSharedPrefs(track)
+            historyInteractor.addTrackToHistory(track)
             val intent = Intent(this, PlayerActivity::class.java)
             intent.putExtra("TRACK", track)
             startActivity(intent)
         }
-        list = ArrayList<Track>()
-        adapter.list = list
+        tracks = ArrayList<Track>()
+        adapter.list = tracks
 
         etSearch = findViewById<EditText>(R.id.etSearch)
         etSearch.setText(searchText)
@@ -127,8 +122,8 @@ class SearchActivity : AppCompatActivity() {
         progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
         historyAdapter = TrackAdapter() { item ->
-            TrackPreferences(sharedPreferences).addToSharedPrefs(item)
-            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            historyInteractor.addTrackToHistory(item)
+            historyAdapter.list = historyInteractor.getHistory()
             historyAdapter.notifyDataSetChanged()
             val intent = Intent(this, PlayerActivity::class.java)
             intent.putExtra("TRACK", item)
@@ -150,20 +145,20 @@ class SearchActivity : AppCompatActivity() {
             etSearch.setText("")
             val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(etSearch.windowToken, 0)
-            list.clear()
+            tracks.clear()
             tvEmptySearchOutput.visibility = View.GONE
             llConnectionError.visibility = View.GONE
             adapter.notifyDataSetChanged()
         }
 
         etSearch.setOnFocusChangeListener() { view, hasFocus ->
-            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            historyAdapter.list = historyInteractor.getHistory()
             if (hasFocus && etSearch.text.isEmpty()) showSearchHistory()
         }
 
         bClearHistory.setOnClickListener {
-            TrackPreferences(sharedPreferences).clear()
-            historyAdapter.list = TrackPreferences(sharedPreferences).read()
+            historyInteractor.clearHistory()
+            historyAdapter.list = historyInteractor.getHistory()
             historyAdapter.notifyDataSetChanged()
             llSearchHistory.visibility = View.GONE
         }
@@ -173,30 +168,30 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        showProgressBar()
-        songApi.search(etSearch.text.toString()).enqueue(object : Callback<SongSearchResponse> {
-            override fun onResponse(
-                call: Call<SongSearchResponse>, response: Response<SongSearchResponse>
-            ) {
-                showSearchResult()
-                when (response.code()) {
-                    200 -> {
-                        list.clear()
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            list.addAll(response.body()?.results!!)
+        if (etSearch.text.isNotEmpty()) {
+            showProgressBar()
+            trackIterator.searchTracks(
+                etSearch.text.toString(), object : TrackInteractor.TracksConsumer {
+                    override fun consume(foundTracks: List<Track>) {
+                        handler.post {
+                            showSearchResult()
+                            if (foundTracks != null) {
+                                tracks.clear()
+                                if (foundTracks.isNotEmpty()) {
+                                    tracks.addAll(foundTracks)
+                                }
+                                if (tracks.isEmpty()) {
+                                    showSearchEmptyResult()
+                                }
+                            } else {
+                                showConnectionError()
+                            }
                             adapter.notifyDataSetChanged()
                         }
-                        if (list.isEmpty() && etSearch.text.isNotEmpty()) {
-                            showSearchEmptyResult()
-                        }
                     }
-                }
-            }
 
-            override fun onFailure(call: Call<SongSearchResponse>, t: Throwable) {
-                showConnectionError()
-            }
-        })
+                })
+        }
     }
 
     private fun showSearchResult() {
@@ -234,9 +229,9 @@ class SearchActivity : AppCompatActivity() {
     private fun showSearchHistory() {
         rvSearchHistory.layoutManager = LinearLayoutManager(this)
         rvSearchHistory.adapter = historyAdapter
-        historyAdapter.list = TrackPreferences(sharedPreferences).read()
+        historyAdapter.list = historyInteractor.getHistory()
 
-        if (TrackPreferences(sharedPreferences).read().isNotEmpty()) {
+        if (historyInteractor.getHistory().isNotEmpty()) {
             recycleView.visibility = View.GONE
             llConnectionError.visibility = View.GONE
             tvEmptySearchOutput.visibility = View.GONE
