@@ -31,8 +31,10 @@ class SettingsActivity : AppCompatActivity() {
             )
         ).get(SettingsViewModel::class.java)
 
-        if (viewModel.getSwitchState()) {
-            binding.themeSwitcher.setChecked(true)
+        viewModel.observeSwitchState().observe(this) {
+            if (it) {
+                binding.themeSwitcher.setChecked(true)
+            }
         }
 
         binding.toolBar.setNavigationOnClickListener {

@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.settings.ui
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
@@ -13,6 +14,8 @@ class SettingsViewModel(
     private val settingsInteractor: SettingsInteractor
 ) : ViewModel() {
 
+    private val switchStateLiveData = MutableLiveData(getSwitchState())
+    fun observeSwitchState(): MutableLiveData<Boolean> = switchStateLiveData
     fun getSwitchState(): Boolean {
         return settingsInteractor.getThemeSettings().darkTheme
     }
@@ -30,6 +33,7 @@ class SettingsViewModel(
     }
 
     fun switchTheme(isDark: Boolean) {
+        if (isDark == getSwitchState()) return
         settingsInteractor.updateThemeSettings(ThemeSettings(isDark))
     }
 

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.practicum.playlistmaker.player.models.PlayerState
 import com.practicum.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -24,45 +25,51 @@ class PlayerViewModel(
     }
     private val handler = Handler(Looper.getMainLooper())
     private var mediaPlayer = MediaPlayer()
-    private var playerStateLiveData = MutableLiveData(STATE_DEFAULT)
-    fun observePlayerState(): LiveData<Int> = playerStateLiveData
+    private val playerStateLiveData = MutableLiveData(PlayerState(STATE_DEFAULT, "00:00"))
+    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
-    private var timeProgressLiveData = MutableLiveData("00:00")
-    fun observeTimeProgress(): LiveData<String> = timeProgressLiveData
+    init {
+        preparePlayer()
+    }
 
     fun preparePlayer() {
         mediaPlayer.setDataSource(track?.previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.value = STATE_PREPARED
+            val currentState = playerStateLiveData.value ?: PlayerState(STATE_DEFAULT, "00:00")
+            playerStateLiveData.postValue(currentState.copy(state = STATE_PREPARED))
         }
         mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.value = STATE_PREPARED
+            val currentState = playerStateLiveData.value ?: PlayerState(STATE_DEFAULT, "00:00")
+            playerStateLiveData.postValue(currentState.copy(state = STATE_PREPARED, timeProgress = "00:00"))
             handler.removeCallbacks(updateTimeRunnable)
         }
     }
 
     fun updateCurrentTime() {
-        if (mediaPlayer.isPlaying) {
-            timeProgressLiveData.value =
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+        if (playerStateLiveData.value?.state == STATE_PLAYING) {
+            val newTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+            val currentState = playerStateLiveData.value ?: return
+            playerStateLiveData.postValue(currentState.copy(timeProgress = newTime))
         }
     }
 
     fun startPlayer() {
         mediaPlayer.start()
         handler.post(updateTimeRunnable)
-        playerStateLiveData.value = STATE_PLAYING
+        val currentState = playerStateLiveData.value ?: return
+        playerStateLiveData.postValue(currentState.copy(state = STATE_PLAYING))
     }
 
     fun pausePlayer() {
         mediaPlayer.pause()
-        playerStateLiveData.value = STATE_PAUSED
+        val currentState = playerStateLiveData.value ?: return
+        playerStateLiveData.postValue(currentState.copy(state = STATE_PAUSED))
         handler.removeCallbacks(updateTimeRunnable)
     }
 
     fun playbackControl() {
-        when (playerStateLiveData.value) {
+        when (playerStateLiveData.value?.state) {
             STATE_PLAYING -> {
                 pausePlayer()
             }
@@ -70,15 +77,17 @@ class PlayerViewModel(
             STATE_PREPARED, STATE_PAUSED -> {
                 startPlayer()
             }
+            else -> {
+
+            }
         }
     }
 
-    fun onDestroyPlayer() {
+    override fun onCleared() {
+        super.onCleared()
         mediaPlayer.release()
         handler.removeCallbacks(updateTimeRunnable)
     }
-
-    fun getTrack(): Track? = track
 
     companion object {
         fun getFactory(track: Track?): ViewModelProvider.Factory = viewModelFactory {
@@ -87,9 +96,9 @@ class PlayerViewModel(
             }
         }
 
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
+        const val STATE_DEFAULT = 0
+        const val STATE_PREPARED = 1
+        const val STATE_PLAYING = 2
+        const val STATE_PAUSED = 3
     }
 }

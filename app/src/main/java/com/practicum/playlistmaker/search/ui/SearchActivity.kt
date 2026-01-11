@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -12,11 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.search.domain.TrackInteractor
-import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.player.ui.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
@@ -33,10 +32,8 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getFactory(
-                Creator.provideHistoryInteractor(this),
-                Creator.provideTracksInteractor()
+            this, SearchViewModel.getFactory(
+                Creator.provideHistoryInteractor(this), Creator.provideTracksInteractor()
             )
         ).get(SearchViewModel::class.java)
 
@@ -47,8 +44,20 @@ class SearchActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.etSearch.setText(searchText)
+        binding.rcView.layoutManager = LinearLayoutManager(this)
+        binding.rcView.adapter = adapter
 
+        historyAdapter = TrackAdapter() { item ->
+            viewModel.addTrackToHistory(item)
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("TRACK", item)
+            startActivity(intent)
+        }
+
+        binding.rvSearchHistory.layoutManager = LinearLayoutManager(this)
+        binding.rvSearchHistory.adapter = historyAdapter
+
+        binding.etSearch.setText(searchText)
         setUpClickListeners()
 
         val textWatcher = object : TextWatcher {
@@ -68,14 +77,12 @@ class SearchActivity : AppCompatActivity() {
         binding.etSearch.addTextChangedListener(textWatcher)
 
         viewModel.observeState().observe(this) {
-            onStateChanged(it)
-        }
+            Log.i("STATE", "Нахожусь в observeState состояние - ${it.state}")
+            historyAdapter.list = it.tracksHistory
+            adapter.list = it.tracksSearch
 
-        viewModel.observeTracks().observe(this) {
-            adapter.list = it
-            adapter.notifyDataSetChanged()
+            onStateChanged(it.state)
         }
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -89,17 +96,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setUpClickListeners() {
-        binding.rcView.layoutManager = LinearLayoutManager(this)
-        binding.rcView.adapter = adapter
-
-        historyAdapter = TrackAdapter() { item ->
-            viewModel.addTrackToHistory(item)
-            historyAdapter.list = viewModel.getHistoryList()
-            historyAdapter.notifyDataSetChanged()
-            val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra("TRACK", item)
-            startActivity(intent)
-        }
 
         binding.etSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE && binding.etSearch.text.isNotEmpty()) {
@@ -119,17 +115,14 @@ class SearchActivity : AppCompatActivity() {
             viewModel.clearTracks()
             binding.tvEmptySearchOutput.visibility = View.GONE
             binding.llErrorInternetConnection.visibility = View.GONE
-            adapter.notifyDataSetChanged()
         }
 
         binding.etSearch.setOnFocusChangeListener() { view, hasFocus ->
-            historyAdapter.list = viewModel.getHistoryList()
             if (hasFocus && binding.etSearch.text.isEmpty()) showSearchHistory()
         }
 
         binding.bClearSearchHistory.setOnClickListener {
-            historyAdapter.list = viewModel.onButtonClearHistoryClicked()
-            historyAdapter.notifyDataSetChanged()
+            viewModel.onButtonClearHistoryClicked()
             binding.llSearchHistory.visibility = View.GONE
         }
         findViewById<Toolbar>(R.id.tbSearch).setOnClickListener {
@@ -138,9 +131,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
 
-
     private fun onStateChanged(state: Int) {
-        when(state) {
+        Log.i("STATE", "Нахожусь в onStateChanged состояние - $state")
+        when (state) {
             LOADING_STATE -> showProgressBar()
             CONNECTION_ERROR_STATE -> showConnectionError()
             EMPTY_RESULT_STATE -> showSearchEmptyResult()
@@ -150,49 +143,38 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showSearchResult() {
+        goneEverything()
         binding.rcView.visibility = View.VISIBLE
-        binding.llErrorInternetConnection.visibility = View.GONE
-        binding.tvEmptySearchOutput.visibility = View.GONE
-        binding.llSearchHistory.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
     }
 
     private fun showProgressBar() {
-        binding.rcView.visibility = View.GONE
-        binding.llErrorInternetConnection.visibility = View.GONE
-        binding.tvEmptySearchOutput.visibility = View.GONE
-        binding.llSearchHistory.visibility = View.GONE
+        goneEverything()
         binding.progressBar.visibility = View.VISIBLE
     }
 
     private fun showSearchEmptyResult() {
-        binding.rcView.visibility = View.GONE
-        binding.llErrorInternetConnection.visibility = View.GONE
+        goneEverything()
         binding.tvEmptySearchOutput.visibility = View.VISIBLE
-        binding.llSearchHistory.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
     }
 
     private fun showConnectionError() {
-        binding.rcView.visibility = View.GONE
+        goneEverything()
         binding.llErrorInternetConnection.visibility = View.VISIBLE
-        binding.tvEmptySearchOutput.visibility = View.GONE
-        binding.llSearchHistory.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
     }
 
     private fun showSearchHistory() {
-        binding.rvSearchHistory.layoutManager = LinearLayoutManager(this)
-        binding.rvSearchHistory.adapter = historyAdapter
-        historyAdapter.list = viewModel.getHistoryList()
-
+        viewModel.getHistoryList()
         if (historyAdapter.list.isNotEmpty()) {
-            binding.rcView.visibility = View.GONE
-            binding.llErrorInternetConnection.visibility = View.GONE
-            binding.tvEmptySearchOutput.visibility = View.GONE
+            goneEverything()
             binding.llSearchHistory.visibility = View.VISIBLE
-            binding.progressBar.visibility = View.GONE
         }
+    }
+    private fun goneEverything() {
+        binding.rcView.visibility = View.GONE
+        binding.llErrorInternetConnection.visibility = View.GONE
+        binding.tvEmptySearchOutput.visibility = View.GONE
+        binding.llSearchHistory.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
     }
 
     companion object {

@@ -8,7 +8,11 @@ import com.practicum.playlistmaker.search.domain.models.Track
 
 class TrackAdapter(private val onItemClick: (Track) -> Unit) :
     RecyclerView.Adapter<TrackViewHolder>() {
-    lateinit var list: List<Track>
+    var list: List<Track> = emptyList()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_song_info, parent, false)

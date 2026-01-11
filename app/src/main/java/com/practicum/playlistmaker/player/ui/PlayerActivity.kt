@@ -9,28 +9,28 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityAudioplayerBinding
+import com.practicum.playlistmaker.player.ui.PlayerViewModel.Companion.STATE_PLAYING
 import com.practicum.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAudioplayerBinding
     private lateinit var viewModel: PlayerViewModel
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAudioplayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val track = intent.getSerializableExtra("TRACK") as? Track
         viewModel = ViewModelProvider(
             this, PlayerViewModel.getFactory(
-                intent.getParcelableExtra<Track>("TRACK")
+                track
             )
         ).get(PlayerViewModel::class.java)
 
-        viewModel.preparePlayer()
-        val track = viewModel.getTrack()
         if (track != null) {
             try {
                 Glide.with(this).load(track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
@@ -75,16 +75,12 @@ class PlayerActivity : AppCompatActivity() {
             viewModel.playbackControl()
         }
 
-        viewModel.observeTimeProgress().observe(this) {
-            binding.tvTrackTime.text = it
-        }
-
         viewModel.observePlayerState().observe(this) {
-            when (it) {
+            binding.tvTrackTime.text = it.timeProgress
+            when (it.state) {
                 STATE_PLAYING -> {
                     binding.ibPlay.setImageResource(R.drawable.ic_pause_button)
                 }
-
                 else -> {
                     binding.ibPlay.setImageResource(R.drawable.ic_button_play)
                 }
@@ -94,18 +90,9 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.pausePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.onDestroyPlayer()
-    }
-
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
     }
 }

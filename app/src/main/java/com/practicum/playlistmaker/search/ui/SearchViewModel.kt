@@ -11,32 +11,36 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.domain.api.HistoryInteractor
 import com.practicum.playlistmaker.search.domain.TrackInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.search.models.SearchState
 import com.practicum.playlistmaker.utils.Resource
 
 class SearchViewModel(
     private val historyInteractor: HistoryInteractor, private val trackInteractor: TrackInteractor
 ) : ViewModel() {
 
-    private val searchRunnable = Runnable { searchRequest(lastSearchText)}
+    private val searchRunnable = Runnable { searchRequest(lastSearchText) }
     private val handler = Handler(Looper.getMainLooper())
-    private val state = MutableLiveData(DEFAULT_STATE)
-    fun observeState(): LiveData<Int> = state
-    private val tracksList = MutableLiveData(emptyList<Track>())
-    fun observeTracks(): LiveData<List<Track>> = tracksList
+    private val stateLiveData =
+        MutableLiveData(SearchState(DEFAULT_STATE, emptyList(), emptyList()))
+
+    init {
+        getHistoryList()
+    }
+    fun observeState(): LiveData<SearchState> = stateLiveData
     private var lastSearchText: String = ""
-    fun getHistoryList(): List<Track> {
+    fun getHistoryList() {
         when (val resource = historyInteractor.getHistory()) {
             is Resource.Success -> {
                 if (resource != null) {
-                    return resource.data ?: emptyList()
+                    val currentState = stateLiveData.value ?: SearchState(DEFAULT_STATE, emptyList(),emptyList())
+                    if (currentState.tracksHistory == resource.data) return
+                    stateLiveData.postValue(currentState.copy(tracksHistory = resource.data ?: emptyList()))
                 }
-            }
-
-            is Resource.Error -> {
-                return emptyList()
+            } else -> {
+                val currentState = stateLiveData.value ?: SearchState(DEFAULT_STATE, emptyList(),emptyList())
+                stateLiveData.postValue(currentState.copy(tracksHistory = emptyList()))
             }
         }
-        return emptyList()
     }
 
     fun addTrackToHistory(track: Track) {
@@ -52,9 +56,9 @@ class SearchViewModel(
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
-    fun onButtonClearHistoryClicked(): List<Track> {
+    fun onButtonClearHistoryClicked() {
         historyInteractor.clearHistory()
-        return getHistoryList()
+        getHistoryList()
     }
 
     fun search(searchText: String) {
@@ -65,20 +69,25 @@ class SearchViewModel(
 
     private fun searchRequest(expression: String) {
         if (expression.isEmpty()) return
-        state.value = LOADING_STATE
+
+        val currentState = stateLiveData.value ?: SearchState(DEFAULT_STATE, emptyList(),emptyList())
+        stateLiveData.postValue(currentState.copy(state = LOADING_STATE))
+
         trackInteractor.searchTracks(
             expression, object : TrackInteractor.TracksConsumer {
                 override fun consume(foundTracks: List<Track>?) {
                     handler.post {
+                        val lastState = stateLiveData.value ?: SearchState(DEFAULT_STATE, emptyList(),emptyList())
                         if (foundTracks != null) {
-                            tracksList.value = foundTracks
-                            if (foundTracks.isNotEmpty()) {
-                                state.value = RESULT_STATE
+                            val newState = if (foundTracks.isNotEmpty()) {
+                                lastState.copy(tracksSearch = foundTracks, state = RESULT_STATE)
                             } else {
-                                state.value = EMPTY_RESULT_STATE
+                                lastState.copy(tracksSearch = emptyList(), state = EMPTY_RESULT_STATE)
+
                             }
+                            stateLiveData.value = newState
                         } else {
-                            state.value = CONNECTION_ERROR_STATE
+                            stateLiveData.value = lastState.copy(state = CONNECTION_ERROR_STATE)
                         }
                     }
                 }
@@ -87,7 +96,8 @@ class SearchViewModel(
     }
 
     fun clearTracks() {
-        tracksList.value = emptyList<Track>()
+        val currentState = stateLiveData.value ?: SearchState(DEFAULT_STATE, emptyList(),emptyList())
+        stateLiveData.postValue(currentState.copy(tracksSearch = emptyList()))
     }
 
     override fun onCleared() {
@@ -111,4 +121,5 @@ class SearchViewModel(
             }
         }
     }
+
 }
