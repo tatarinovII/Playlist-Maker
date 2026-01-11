@@ -67,7 +67,10 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.bClear.isVisible = !s.isNullOrEmpty()
                 searchText = binding.etSearch.text.toString()
-                if (binding.etSearch.hasFocus() && s?.isEmpty() == true) showSearchHistory()
+                if (binding.etSearch.hasFocus() && s?.isEmpty() == true) {
+                    goneEverything()
+                    showSearchHistory()
+                }
                 viewModel.searchDebounce(searchText)
             }
 
