@@ -11,31 +11,24 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerActivity
+import com.practicum.playlistmaker.search.models.SearchScreenState
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var viewModel: SearchViewModel
     private var searchText: String = SEARCH_TEXT_DEF
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
-
+    private val viewModel: SearchViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(
-            this, SearchViewModel.getFactory(
-                Creator.provideHistoryInteractor(this), Creator.provideTracksInteractor()
-            )
-        ).get(SearchViewModel::class.java)
 
         adapter = TrackAdapter() { track ->
             viewModel.addTrackToHistory(track)
@@ -116,8 +109,8 @@ class SearchActivity : AppCompatActivity() {
             val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.etSearch.windowToken, 0)
             viewModel.clearTracks()
-            binding.tvEmptySearchOutput.visibility = View.GONE
-            binding.llErrorInternetConnection.visibility = View.GONE
+            goneEverything()
+            showSearchHistory()
         }
 
         binding.etSearch.setOnFocusChangeListener() { view, hasFocus ->
@@ -137,11 +130,11 @@ class SearchActivity : AppCompatActivity() {
     private fun onStateChanged(state: Int) {
         Log.i("STATE", "Нахожусь в onStateChanged состояние - $state")
         when (state) {
-            LOADING_STATE -> showProgressBar()
-            CONNECTION_ERROR_STATE -> showConnectionError()
-            EMPTY_RESULT_STATE -> showSearchEmptyResult()
-            RESULT_STATE -> showSearchResult()
-            DEFAULT_STATE -> showSearchHistory()
+            SearchScreenState.LOADING_STATE.state -> showProgressBar()
+            SearchScreenState.CONNECTION_ERROR_STATE.state -> showConnectionError()
+            SearchScreenState.EMPTY_RESULT_STATE.state -> showSearchEmptyResult()
+            SearchScreenState.RESULT_STATE.state -> showSearchResult()
+            SearchScreenState.DEFAULT_STATE.state -> showSearchHistory()
         }
     }
 
@@ -183,11 +176,5 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         private const val SEARCH_TEXT_DEF = ""
         private const val SEARCH_TEXT = "SEARCH_TEXT"
-
-        private const val LOADING_STATE = 0
-        private const val CONNECTION_ERROR_STATE = 1
-        private const val EMPTY_RESULT_STATE = 2
-        private const val RESULT_STATE = 3
-        private const val DEFAULT_STATE = 4
     }
 }
