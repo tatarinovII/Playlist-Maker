@@ -23,7 +23,7 @@ class PlayerViewModel(
     }
     private val handler = Handler(Looper.getMainLooper())
     private val playerStateLiveData =
-        MutableLiveData(PlayerState(MediaPlayerState.STATE_DEFAULT.state, "00:00"))
+        MutableLiveData(PlayerState(MediaPlayerState.STATE_DEFAULT.state, SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)))
 
     fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
@@ -36,17 +36,17 @@ class PlayerViewModel(
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             val currentState = playerStateLiveData.value ?: PlayerState(
-                MediaPlayerState.STATE_DEFAULT.state, "00:00"
+                MediaPlayerState.STATE_DEFAULT.state, SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
             )
             playerStateLiveData.postValue(currentState.copy(state = MediaPlayerState.STATE_PREPARED.state))
         }
         mediaPlayer.setOnCompletionListener {
             val currentState = playerStateLiveData.value ?: PlayerState(
-                MediaPlayerState.STATE_DEFAULT.state, "00:00"
+                MediaPlayerState.STATE_DEFAULT.state, SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
             )
             playerStateLiveData.postValue(
                 currentState.copy(
-                    state = MediaPlayerState.STATE_PREPARED.state, timeProgress = "00:00"
+                    state = MediaPlayerState.STATE_PREPARED.state, timeProgress = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
                 )
             )
             handler.removeCallbacks(updateTimeRunnable)

@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.player.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -18,8 +19,12 @@ import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAudioplayerBinding
-    private val track by lazy {
-        intent.getSerializableExtra("TRACK") as? Track
+    private val track: Track? by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("TRACK", Track::class.java)
+        } else {
+            intent.getParcelableExtra("TRACK")
+        }
     }
     private lateinit var viewModel: PlayerViewModel
 

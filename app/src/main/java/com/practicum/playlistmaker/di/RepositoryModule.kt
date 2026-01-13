@@ -14,19 +14,19 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single<HistoryRepository> {
+    factory<HistoryRepository> {
         HistoryRepositoryImpl(get())
     }
 
-    single<TrackRepository> {
+    factory<TrackRepository> {
         TracksRepositoryImpl(get())
     }
 
-    single<SettingsRepository> {
+    factory<SettingsRepository> {
         SettingsRepositoryImpl(get(named("settingsPrefs")))
     }
 
-    single<SharingRepository> {
+    factory<SharingRepository> {
         SharingRepositoryImpl(androidContext())
     }
 }
