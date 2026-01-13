@@ -10,12 +10,14 @@ class ExternalNavigator(private val context: Context) {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
         intent.putExtra(Intent.EXTRA_TEXT, link)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
     fun openLink(link: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(link)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -27,6 +29,7 @@ class ExternalNavigator(private val context: Context) {
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf("ilya.tatarinov77@gmail.com"))
         intent.putExtra(Intent.EXTRA_TEXT, message)
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 }

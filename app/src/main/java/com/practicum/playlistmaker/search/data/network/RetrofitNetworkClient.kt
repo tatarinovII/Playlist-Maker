@@ -2,15 +2,13 @@ package com.practicum.playlistmaker.search.data.network
 
 import com.practicum.playlistmaker.search.data.NetworkClient
 import com.practicum.playlistmaker.search.data.dto.Response
+import com.practicum.playlistmaker.search.data.dto.TrackSearchRequest
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitNetworkClient : NetworkClient {
-
-    val retrofitApi: Retrofit = Retrofit.Builder().baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create()).build()
-
-    private val songApi = retrofitApi.create(SongApi::class.java)
+class RetrofitNetworkClient(
+    private val songApi: SongApi
+) : NetworkClient {
 
     override fun doRequest(dto: Any): Response {
         if (dto is TrackSearchRequest) {
@@ -20,9 +18,5 @@ class RetrofitNetworkClient : NetworkClient {
         } else {
             return Response().apply { resultCode = 400 }
         }
-    }
-
-    companion object {
-        private const val BASE_URL = "https://itunes.apple.com"
     }
 }
