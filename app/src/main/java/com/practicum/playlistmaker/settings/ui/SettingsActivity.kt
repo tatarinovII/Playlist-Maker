@@ -15,8 +15,8 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel.observeSwitchState().observe(this) {
-            if (it) {
-                binding.themeSwitcher.setChecked(true)
+            if (binding.themeSwitcher.isChecked != it) {
+                binding.themeSwitcher.isChecked = it
             }
         }
 

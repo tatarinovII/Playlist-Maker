@@ -1,21 +1,33 @@
 package com.practicum.playlistmaker.library.ui
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivityLibraryBinding
 
 class LibraryActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityLibraryBinding
+    private lateinit var tabMediator: TabLayoutMediator
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_library)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        binding = ActivityLibraryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.viewPager.adapter = LibraryViewPagerAdapter(
+            fragmentManager = supportFragmentManager, lifecycle = lifecycle
+        )
+
+        tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            when (position) {
+                0 -> tab.text = getString(R.string.favorite_tracks)
+                1 -> tab.text = getString(R.string.playlists)
+            }
+        }
+        tabMediator.attach()
+
+        binding.tbLibrary.setNavigationOnClickListener {
+            this.onBackPressedDispatcher.onBackPressed()
         }
     }
 }
