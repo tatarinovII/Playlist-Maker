@@ -59,4 +59,14 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
+    <style name="BottomNavInactiveTitleTextStyle">
+        <item name="android:textSize">@dimen/bottom_nav_text_size</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontWeight">400</item>
+    </style>
+    <style name="BottomNavActiveTitleTextStyle">
+        <item name="android:textSize">@dimen/bottom_nav_text_size</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontWeight">400</item>
+    </style>
 </resources>

@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel(
-    private val track: Track?, private val mediaPlayer: MediaPlayer
+    private val track: Track, private val mediaPlayer: MediaPlayer
 ) : ViewModel() {
     private val updateTimeRunnable = object : Runnable {
         override fun run() {
@@ -32,24 +32,29 @@ class PlayerViewModel(
     }
 
     fun preparePlayer() {
-        mediaPlayer.setDataSource(track?.previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            val currentState = playerStateLiveData.value ?: PlayerState(
-                MediaPlayerState.STATE_DEFAULT.state, SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
-            )
-            playerStateLiveData.postValue(currentState.copy(state = MediaPlayerState.STATE_PREPARED.state))
-        }
-        mediaPlayer.setOnCompletionListener {
-            val currentState = playerStateLiveData.value ?: PlayerState(
-                MediaPlayerState.STATE_DEFAULT.state, SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
-            )
-            playerStateLiveData.postValue(
-                currentState.copy(
-                    state = MediaPlayerState.STATE_PREPARED.state, timeProgress = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
+        if (track.previewUrl != null) {
+            mediaPlayer.setDataSource(track.previewUrl)
+            mediaPlayer.prepareAsync()
+            mediaPlayer.setOnPreparedListener {
+                val currentState = playerStateLiveData.value ?: PlayerState(
+                    MediaPlayerState.STATE_DEFAULT.state,
+                    SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
                 )
-            )
-            handler.removeCallbacks(updateTimeRunnable)
+                playerStateLiveData.postValue(currentState.copy(state = MediaPlayerState.STATE_PREPARED.state))
+            }
+            mediaPlayer.setOnCompletionListener {
+                val currentState = playerStateLiveData.value ?: PlayerState(
+                    MediaPlayerState.STATE_DEFAULT.state,
+                    SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
+                )
+                playerStateLiveData.postValue(
+                    currentState.copy(
+                        state = MediaPlayerState.STATE_PREPARED.state,
+                        timeProgress = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
+                    )
+                )
+                handler.removeCallbacks(updateTimeRunnable)
+            }
         }
     }
 

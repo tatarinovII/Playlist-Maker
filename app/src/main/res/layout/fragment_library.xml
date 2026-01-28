@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".search.ui.SearchActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".library.ui.LibraryFragment"
+    android:background="?attr/backgroundColor">
 
     <Toolbar
         android:id="@+id/tbLibrary"
@@ -14,7 +14,6 @@
         android:layout_height="56dp"
         android:title="@string/library"
         android:contentInsetStartWithNavigation="64dp"
-        android:navigationIcon="@drawable/ic_arrow"
         android:titleTextAppearance="@style/SettingsActivityToolbarTitleStyle" />
 
     <com.google.android.material.tabs.TabLayout
@@ -23,6 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         app:tabIndicatorColor="?attr/colorPrimary"
+        android:backgroundTint="?attr/backgroundColor"
         app:tabIndicatorHeight="2dp"
         app:tabTextAppearance="@style/LibraryTabLayoutTextStyle"/>
 

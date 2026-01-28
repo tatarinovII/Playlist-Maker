@@ -15,7 +15,6 @@ class SettingsInteractorImpl(
     }
 
     override fun updateThemeSettings(settings: ThemeSettings) {
-        if (getThemeSettings().darkTheme == settings.darkTheme) return
         settingsRepository.updatedThemeSettings(settings)
         themeSwitcher.applyTheme(settings.darkTheme)
     }

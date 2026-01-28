@@ -2,13 +2,16 @@ package com.practicum.playlistmaker.player.ui
 
 import android.os.Build
 import android.os.Bundle
-import android.widget.ImageButton
-import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityAudioplayerBinding
+import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.models.MediaPlayerState
 import com.practicum.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -16,22 +19,27 @@ import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+class PlayerFragment : Fragment() {
+    private lateinit var binding: FragmentPlayerBinding
 
-class PlayerActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityAudioplayerBinding
     private val track: Track? by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("TRACK", Track::class.java)
+            requireArguments().getParcelable(ARGS_PLAYER, Track::class.java)
         } else {
-            intent.getParcelableExtra("TRACK")
+            requireArguments().getParcelable(ARGS_PLAYER)
         }
     }
     private lateinit var viewModel: PlayerViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAudioplayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val vm: PlayerViewModel by viewModel() {
             parametersOf(track)
@@ -43,9 +51,9 @@ class PlayerActivity : AppCompatActivity() {
             try {
                 Glide.with(this).load(track!!.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
                     .fitCenter().placeholder(R.drawable.ic_placeholder_album)
-                    .into(findViewById<ImageView>(R.id.ivAlbumPhoto))
+                    .into(binding.ivAlbumPhoto)
             } catch (e: Exception) {
-                findViewById<ImageView>(R.id.ivAlbumPhoto).setImageResource(R.drawable.ic_placeholder_album)
+                binding.ivAlbumPhoto.setImageResource(R.drawable.ic_placeholder_album)
             }
             binding.trackName.text = track!!.trackName
             binding.tvTrackArtistName.text = track!!.artistName
@@ -72,18 +80,18 @@ class PlayerActivity : AppCompatActivity() {
                 binding.TextViewYear.isVisible = false
             }
         } else {
-            finish()
+            findNavController().navigateUp()
         }
 
-        findViewById<ImageButton>(R.id.btnBackFromPlayer).setOnClickListener {
-            finish()
+        binding.btnBackFromPlayer.setOnClickListener {
+            findNavController().navigateUp()
         }
 
         binding.ibPlay.setOnClickListener {
             viewModel.playbackControl()
         }
 
-        viewModel.observePlayerState().observe(this) {
+        viewModel.observePlayerState().observe(viewLifecycleOwner) {
             binding.tvTrackTime.text = it.timeProgress
             when (it.state) {
                 MediaPlayerState.STATE_PLAYING.state -> {
@@ -97,11 +105,8 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+    companion object {
+        private const val ARGS_PLAYER = "TRACK"
+        fun createArgs(track: Track): Bundle = bundleOf(ARGS_PLAYER to track)
     }
 }

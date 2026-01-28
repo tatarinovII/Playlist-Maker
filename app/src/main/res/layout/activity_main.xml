@@ -1,37 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="?attr/backgroundColor"
-    android:paddingBottom="28dp">
+    android:background="?attr/backgroundColor">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/container_view"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        app:title="@string/app_name"
-        app:titleTextAppearance="@style/MainActivityTitleStyle"
-        app:titleTextColor="@color/white"
-        android:layout_marginBottom="20dp"/>
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:navGraph="@navigation/nav_graph"
+        app:defaultNavHost="true"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/bSearch"
-        style="@style/MainActivityButtonStyle"
-        android:text="@string/search"
-        app:icon="@drawable/ic_search"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/bLibrary"
-        android:text="@string/library"
-        app:icon="@drawable/ic_library"
-        style="@style/MainActivityButtonStyle"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/bSettings"
-        app:icon="@drawable/ic_settings"
-        android:text="@string/settings"
-        style="@style/MainActivityButtonStyle"/>
-
-    </LinearLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemTextAppearanceActive="@style/BottomNavActiveTitleTextStyle"
+        app:itemTextAppearanceInactive="@style/BottomNavInactiveTitleTextStyle"
+        app:itemTextColor="@color/bottom_nav_view_color"
+        app:itemIconTint="@color/bottom_nav_view_color"
+        app:backgroundTint="?attr/backgroundColor"/>
+</LinearLayout>
 
