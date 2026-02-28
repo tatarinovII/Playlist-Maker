@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".search.ui.SearchActivity">
+    tools:context=".search.ui.SearchFragment"
+    android:orientation="vertical">
 
     <Toolbar
         android:id="@+id/tbSearch"
@@ -14,7 +13,6 @@
         android:layout_height="56dp"
         android:title="@string/search"
         android:contentInsetStartWithNavigation="64dp"
-        android:navigationIcon="@drawable/ic_arrow"
         android:titleTextAppearance="@style/SettingsActivityToolbarTitleStyle" />
 
     <LinearLayout
@@ -170,7 +168,8 @@
         android:layout_height="@dimen/progress_bar_size"
         android:layout_gravity="center"
         android:indeterminateTint="@color/blue"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_marginTop="140dp"/>
+
 
 </LinearLayout>

@@ -1,40 +1,29 @@
 package com.practicum.playlistmaker.home.ui
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.library.ui.LibraryActivity
-import com.practicum.playlistmaker.search.ui.SearchActivity
-import com.practicum.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bSearch = findViewById<Button>(R.id.bSearch)
-        val bLibrary = findViewById<Button>(R.id.bLibrary)
-        val bSettings = findViewById<Button>(R.id.bSettings)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.container_view) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        val buttonSearchClickListener: View.OnClickListener = object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val intent = Intent(this@MainActivity, SearchActivity::class.java)
-                startActivity(intent)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView)
+        bottomNavigationView.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.playerFragment -> bottomNavigationView.isVisible = false
+                else -> bottomNavigationView.isVisible = true
             }
-        }
-        bSearch.setOnClickListener(buttonSearchClickListener)
-
-        bLibrary.setOnClickListener {
-            val intent = Intent(this@MainActivity, LibraryActivity::class.java)
-            startActivity(intent)
-        }
-
-        bSettings.setOnClickListener {
-            val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-            startActivity(intent)
         }
     }
 }

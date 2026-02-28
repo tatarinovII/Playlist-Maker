@@ -12,7 +12,7 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
 
-    viewModel<PlayerViewModel> { (track: Track?) ->
+    viewModel<PlayerViewModel> { (track: Track) ->
         PlayerViewModel(track, get())
     }
 

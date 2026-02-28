@@ -14,10 +14,14 @@ class SettingsViewModel(
     private val settingsInteractor: SettingsInteractor
 ) : ViewModel() {
 
-    private val switchStateLiveData = MutableLiveData(getSwitchState())
+    private val switchStateLiveData = MutableLiveData<Boolean>()
     fun observeSwitchState(): MutableLiveData<Boolean> = switchStateLiveData
     fun getSwitchState(): Boolean {
         return settingsInteractor.getThemeSettings().darkTheme
+    }
+
+    init {
+        switchStateLiveData.value = settingsInteractor.getThemeSettings().darkTheme
     }
 
     fun onContactSupportButtonClicked() {
@@ -33,18 +37,8 @@ class SettingsViewModel(
     }
 
     fun switchTheme(isDark: Boolean) {
-        if (isDark == getSwitchState()) return
+        if (isDark == switchStateLiveData.value) return
+        switchStateLiveData.value = isDark
         settingsInteractor.updateThemeSettings(ThemeSettings(isDark))
-    }
-
-    companion object {
-        fun getFactory(
-            sharingInteractor: SharingInteractor,
-            settingsInteractor: SettingsInteractor
-        ): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SettingsViewModel(sharingInteractor, settingsInteractor)
-            }
-        }
     }
 }
