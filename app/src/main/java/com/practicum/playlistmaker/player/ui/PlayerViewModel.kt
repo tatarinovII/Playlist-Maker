@@ -80,11 +80,17 @@ class PlayerViewModel(
     }
 
     private fun startTimer() {
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
-                delay(300)
+                delay(REFRESH_TIMER_DELAY)
                 playerState.postValue(PlayerState.Playing(getCurrentPlayerPosition()))
             }
+            playerState.postValue(PlayerState.Prepared())
         }
+    }
+
+    companion object {
+        const val REFRESH_TIMER_DELAY = 300L
     }
 }
