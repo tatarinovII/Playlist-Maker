@@ -4,7 +4,6 @@ import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,7 +37,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TrackAdapter() { track ->
+        adapter = TrackAdapter { track ->
             viewModel.addTrackToHistory(track)
 
             findNavController().navigate(
@@ -49,7 +48,7 @@ class SearchFragment : Fragment() {
         binding.rcView.layoutManager = LinearLayoutManager(requireContext())
         binding.rcView.adapter = adapter
 
-        historyAdapter = TrackAdapter() { item ->
+        historyAdapter = TrackAdapter { item ->
             viewModel.addTrackToHistory(item)
 
             findNavController().navigate(
@@ -83,7 +82,6 @@ class SearchFragment : Fragment() {
         binding.etSearch.addTextChangedListener(textWatcher)
 
         viewModel.observeState().observe(viewLifecycleOwner) {
-            Log.i("STATE", "Нахожусь в observeState состояние - ${it.state}")
             historyAdapter.list = it.tracksHistory
             adapter.list = it.tracksSearch
 
@@ -124,7 +122,7 @@ class SearchFragment : Fragment() {
             showSearchHistory()
         }
 
-        binding.etSearch.setOnFocusChangeListener() { view, hasFocus ->
+        binding.etSearch.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && binding.etSearch.text.isEmpty()) showSearchHistory()
         }
 
@@ -136,7 +134,6 @@ class SearchFragment : Fragment() {
 
 
     private fun onStateChanged(state: Int) {
-        Log.i("STATE", "Нахожусь в onStateChanged состояние - $state")
         when (state) {
             SearchScreenState.LOADING_STATE.state -> showProgressBar()
             SearchScreenState.CONNECTION_ERROR_STATE.state -> showConnectionError()

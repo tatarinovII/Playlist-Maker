@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
-import com.practicum.playlistmaker.player.models.MediaPlayerState
+import com.practicum.playlistmaker.player.models.PlayerState
 import com.practicum.playlistmaker.search.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -41,7 +41,7 @@ class PlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val vm: PlayerViewModel by viewModel() {
+        val vm: PlayerViewModel by viewModel {
             parametersOf(track)
         }
 
@@ -88,21 +88,28 @@ class PlayerFragment : Fragment() {
         }
 
         binding.ibPlay.setOnClickListener {
-            viewModel.playbackControl()
+            viewModel.onPlayButtonClicked()
         }
-
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
-            binding.tvTrackTime.text = it.timeProgress
-            when (it.state) {
-                MediaPlayerState.STATE_PLAYING.state -> {
+            binding.ibPlay.isEnabled = it.isPlayButtonEnabled
+            binding.tvTrackTime.text = it.progress
+            when (it) {
+                is PlayerState.Playing -> {
                     binding.ibPlay.setImageResource(R.drawable.ic_pause_button)
                 }
 
-                else -> {
+                is PlayerState.Paused, is PlayerState.Prepared -> {
                     binding.ibPlay.setImageResource(R.drawable.ic_button_play)
                 }
+
+                else -> {}
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.pausePlayer()
     }
 
     companion object {
