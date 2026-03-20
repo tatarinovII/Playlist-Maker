@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -61,4 +62,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.kotlinx.coroutines.android)
+
+    val room_version = "2.8.4" // Актуальная стабильная версия
+    implementation("androidx.room:room-runtime:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+    // Поддержка Kotlin Extensions и Coroutines (Flow, suspend)
+    implementation("androidx.room:room-ktx:$room_version")
 }

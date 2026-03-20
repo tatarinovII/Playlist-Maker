@@ -79,6 +79,9 @@ class PlayerFragment : Fragment() {
                 binding.tvYear.isVisible = false
                 binding.TextViewYear.isVisible = false
             }
+            if (track!!.isFavorite) {
+                binding.ibLike.setImageResource(R.drawable.ic_liked)
+            }
         } else {
             findNavController().navigateUp()
         }
@@ -90,9 +93,11 @@ class PlayerFragment : Fragment() {
         binding.ibPlay.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
+
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
             binding.ibPlay.isEnabled = it.isPlayButtonEnabled
             binding.tvTrackTime.text = it.progress
+            if (it.isFavorite) binding.ibLike.setImageResource(R.drawable.ic_liked) else binding.ibLike.setImageResource(R.drawable.ic_unliked)
             when (it) {
                 is PlayerState.Playing -> {
                     binding.ibPlay.setImageResource(R.drawable.ic_pause_button)
@@ -104,6 +109,10 @@ class PlayerFragment : Fragment() {
 
                 else -> {}
             }
+        }
+
+        binding.ibLike.setOnClickListener {
+            viewModel.onButtonLikeClicked()
         }
     }
 

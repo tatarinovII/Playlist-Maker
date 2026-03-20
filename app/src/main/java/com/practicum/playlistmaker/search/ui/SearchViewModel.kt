@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.domain.api.HistoryInteractor
+import com.practicum.playlistmaker.search.domain.HistoryInteractor
 import com.practicum.playlistmaker.search.domain.TrackInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.models.SearchScreenState
@@ -26,22 +26,26 @@ class SearchViewModel(
     private var lastSearchText: String = ""
     private var searchJob: Job? = null
     fun getHistoryList() {
-        when (val resource = historyInteractor.getHistory()) {
-            is Resource.Success -> {
-                val currentState = stateLiveData.value ?: SearchState(
-                    SearchScreenState.DEFAULT_STATE.state, emptyList(), emptyList()
-                )
-                if (currentState.tracksHistory == resource.data) return
-                stateLiveData.postValue(
-                    currentState.copy(
-                        tracksHistory = resource.data ?: emptyList()
+        viewModelScope.launch {
+            when (val resource = historyInteractor.getHistory()) {
+                is Resource.Success -> {
+                    val currentState = stateLiveData.value ?: SearchState(
+                        SearchScreenState.DEFAULT_STATE.state, emptyList(), emptyList()
                     )
-                )
-            } else -> {
-            val currentState = stateLiveData.value ?: SearchState(
-                SearchScreenState.DEFAULT_STATE.state, emptyList(), emptyList()
-            )
-                stateLiveData.postValue(currentState.copy(tracksHistory = emptyList()))
+                    if (currentState.tracksHistory == resource.data) return@launch
+                    stateLiveData.postValue(
+                        currentState.copy(
+                            tracksHistory = resource.data ?: emptyList()
+                        )
+                    )
+                }
+
+                else -> {
+                    val currentState = stateLiveData.value ?: SearchState(
+                        SearchScreenState.DEFAULT_STATE.state, emptyList(), emptyList()
+                    )
+                    stateLiveData.postValue(currentState.copy(tracksHistory = emptyList()))
+                }
             }
         }
     }
