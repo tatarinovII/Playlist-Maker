@@ -15,11 +15,11 @@ import org.koin.dsl.module
 val repositoryModule = module {
 
     factory<HistoryRepository> {
-        HistoryRepositoryImpl(get())
+        HistoryRepositoryImpl(get(), get())
     }
 
     factory<TrackRepository> {
-        TracksRepositoryImpl(get())
+        TracksRepositoryImpl(get(), get())
     }
 
     factory<SettingsRepository> {

@@ -1,12 +1,12 @@
-package com.practicum.playlistmaker.domain.impl
+package com.practicum.playlistmaker.search.domain.impl
 
 import com.practicum.playlistmaker.utils.Resource
-import com.practicum.playlistmaker.domain.api.HistoryInteractor
+import com.practicum.playlistmaker.search.domain.HistoryInteractor
 import com.practicum.playlistmaker.search.domain.HistoryRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 
 class HistoryInteractorImpl(val historyRepository: HistoryRepository) : HistoryInteractor {
-    override fun getHistory(): Resource<List<Track>> {
+    override suspend fun getHistory(): Resource<List<Track>> {
         return historyRepository.getHistory()
     }
 

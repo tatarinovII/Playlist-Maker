@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.search.domain.models.Track
 
 interface HistoryRepository {
 
-    fun getHistory(): Resource<List<Track>>
+    suspend fun getHistory(): Resource<List<Track>>
 
     fun saveTrack(track: Track): Boolean
 
