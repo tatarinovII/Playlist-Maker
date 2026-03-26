@@ -1,12 +1,16 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.media.MediaPlayer
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.favorite.domain.FavoriteInteractor
 import com.practicum.playlistmaker.player.models.PlayerState
+import com.practicum.playlistmaker.playlist.domain.Playlist
+import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,7 +21,8 @@ import java.util.Locale
 class PlayerViewModel(
     private val track: Track,
     private val mediaPlayer: MediaPlayer,
-    private val favoriteInteractor: FavoriteInteractor
+    private val favoriteInteractor: FavoriteInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private val playerState =
@@ -123,6 +128,29 @@ class PlayerViewModel(
         }
 
         playerState.postValue(newState!!)
+    }
+
+    fun loadPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor.getAllPlaylists().collect {
+                val currentState = playerState.value
+                val newState = when (currentState) {
+                    is PlayerState.Default -> PlayerState.Default(currentState.isFavorite, it)
+                    is PlayerState.Prepared -> PlayerState.Prepared(currentState.isFavorite, it)
+                    is PlayerState.Playing -> PlayerState.Playing(currentState.progress, currentState.isFavorite, it)
+                    is PlayerState.Paused -> PlayerState.Paused(currentState.progress, currentState.isFavorite, it)
+                    else -> currentState
+                }
+                playerState.postValue(newState!!)
+            }
+        }
+    }
+
+    fun addTrackToPlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            playlistInteractor.addNewTrackToPlaylist(track.trackId, playlist)
+            loadPlaylists()
+        }
     }
 
     companion object {

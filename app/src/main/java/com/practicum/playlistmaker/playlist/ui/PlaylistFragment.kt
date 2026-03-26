@@ -4,8 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import com.practicum.playlistmaker.R
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
+import com.practicum.playlistmaker.favorite.ui.FavoriteFragment
 import org.koin.android.ext.android.inject
 
 class PlaylistFragment : Fragment() {
@@ -21,6 +26,33 @@ class PlaylistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.rvPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
+
+        viewModel.observePlaylistState().observe(viewLifecycleOwner) {
+            when(it) {
+                is PlaylistState.Default -> {
+                    binding.rvPlaylists.adapter = PlaylistAdapter(it.list)
+                    binding.rvPlaylists.isVisible = true
+                    binding.tvEmptyPlaylistPage.isVisible = false
+                }
+                is PlaylistState.Empty -> {
+                    binding.rvPlaylists.isVisible = false
+                    binding.tvEmptyPlaylistPage.isVisible = true
+                }
+            }
+        }
+
+        binding.btnCreateNewPlaylist.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_libraryFragment_to_newPlaylistFragment
+            )
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getAllPlaylists()
     }
 
     companion object {

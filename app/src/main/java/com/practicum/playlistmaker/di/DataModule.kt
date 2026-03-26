@@ -8,6 +8,9 @@ import com.practicum.playlistmaker.favorite.data.FavoriteRepositoryImpl
 import com.practicum.playlistmaker.favorite.data.db.AppDatabase
 import com.practicum.playlistmaker.favorite.data.mappers.FavoriteDbConvertor
 import com.practicum.playlistmaker.favorite.domain.FavoriteRepository
+import com.practicum.playlistmaker.playlist.data.PlaylistDbConvertor
+import com.practicum.playlistmaker.playlist.data.PlaylistRepositoryImpl
+import com.practicum.playlistmaker.playlist.domain.PlaylistRepository
 import com.practicum.playlistmaker.search.data.NetworkClient
 import com.practicum.playlistmaker.search.data.StorageClient
 import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -53,16 +56,19 @@ val dataModule = module {
             type = object : TypeToken<ArrayList<Track>>() {}.type
         )
     }
+
     single {
         ExternalNavigator(androidContext())
     }
+
     single {
         Room.databaseBuilder(
             androidContext(), AppDatabase::class.java, "database.db"
         ).build()
     }
+
     factory { FavoriteDbConvertor() }
-    single<FavoriteRepository> {
-        FavoriteRepositoryImpl(get(), get())
-    }
+
+    factory { PlaylistDbConvertor(get()) }
+
 }

@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.models.PlayerState
@@ -86,6 +89,31 @@ class PlayerFragment : Fragment() {
             findNavController().navigateUp()
         }
 
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        binding.imAddToQueue.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        binding.overlay.isVisible = true
+                        vm.loadPlaylists()
+                    }
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.isVisible = false
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+
+        })
+
         binding.btnBackFromPlayer.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -94,9 +122,23 @@ class PlayerFragment : Fragment() {
             viewModel.onPlayButtonClicked()
         }
 
+        binding.rvPlaylists.layoutManager = LinearLayoutManager(requireContext())
+
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
             binding.ibPlay.isEnabled = it.isPlayButtonEnabled
             binding.tvTrackTime.text = it.progress
+            if (it.listOfPlaylists.isNotEmpty()) binding.rvPlaylists.adapter = PlayerAdapter(
+                it.listOfPlaylists,
+                onItemClick = {
+                    if (it.tracksIds.contains(track!!.trackId)) {
+                        Toast.makeText(requireContext(),"Трек уже добавлен в плейлист ${it.name}", Toast.LENGTH_SHORT).show()
+                        return@PlayerAdapter
+                    }
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    Toast.makeText(requireContext(),"Добавлено в плейлист ${it.name}", Toast.LENGTH_SHORT).show()
+                    vm.addTrackToPlaylist(it)
+                }
+            )
             if (it.isFavorite) binding.ibLike.setImageResource(R.drawable.ic_liked) else binding.ibLike.setImageResource(R.drawable.ic_unliked)
             when (it) {
                 is PlayerState.Playing -> {
@@ -113,6 +155,10 @@ class PlayerFragment : Fragment() {
 
         binding.ibLike.setOnClickListener {
             viewModel.onButtonLikeClicked()
+        }
+
+        binding.btnCreateNewPlaylist.setOnClickListener {
+            findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
         }
     }
 

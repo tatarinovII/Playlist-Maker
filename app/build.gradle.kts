@@ -68,4 +68,6 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
     // Поддержка Kotlin Extensions и Coroutines (Flow, suspend)
     implementation("androidx.room:room-ktx:$room_version")
+
+    implementation(libs.peko)
 }
