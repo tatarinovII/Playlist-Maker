@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.player.models
 
-import com.practicum.playlistmaker.playlist.domain.Playlist
+import com.practicum.playlistmaker.playlist.domain.models.Playlist
 import java.text.SimpleDateFormat
 import java.util.Locale
 

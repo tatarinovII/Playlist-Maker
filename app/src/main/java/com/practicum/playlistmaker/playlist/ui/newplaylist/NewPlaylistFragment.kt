@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.playlist.ui
+package com.practicum.playlistmaker.playlist.ui.newplaylist
 
 import android.os.Bundle
 import android.text.Editable
@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -90,7 +91,9 @@ class NewPlaylistFragment : Fragment() {
 
     private fun tryBack(photoSelected: Boolean) {
         if (photoSelected || binding.etName.text.isNotEmpty() || binding.etDescription.text.isNotEmpty()) {
-            MaterialAlertDialogBuilder(requireContext()).setTitle("Завершить создание плейлиста?")
+            MaterialAlertDialogBuilder(
+                requireContext(), R.style.PlaylistDialogTheme
+            ).setTitle("Завершить создание плейлиста?")
                 .setMessage("Все несохраненные данные будут потеряны")
                 .setPositiveButton("Завершить") { dialog, which ->
                     findNavController().navigateUp()

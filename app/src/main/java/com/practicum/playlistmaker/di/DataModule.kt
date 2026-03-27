@@ -4,19 +4,17 @@ import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.favorite.data.FavoriteRepositoryImpl
 import com.practicum.playlistmaker.favorite.data.db.AppDatabase
+import com.practicum.playlistmaker.favorite.data.db.FavoriteDao
 import com.practicum.playlistmaker.favorite.data.mappers.FavoriteDbConvertor
-import com.practicum.playlistmaker.favorite.domain.FavoriteRepository
-import com.practicum.playlistmaker.playlist.data.PlaylistDbConvertor
-import com.practicum.playlistmaker.playlist.data.PlaylistRepositoryImpl
-import com.practicum.playlistmaker.playlist.domain.PlaylistRepository
+import com.practicum.playlistmaker.playlist.data.database.PlaylistDbConvertor
+import com.practicum.playlistmaker.playlist.data.database.dao.PlaylistDao
+import com.practicum.playlistmaker.playlist.data.database.dao.PlaylistTrackDao
 import com.practicum.playlistmaker.search.data.NetworkClient
 import com.practicum.playlistmaker.search.data.StorageClient
 import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.practicum.playlistmaker.search.data.network.SongApi
 import com.practicum.playlistmaker.search.data.sharedprefs.PrefsStorageClient
-import com.practicum.playlistmaker.search.domain.HistoryRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.sharing.data.ExternalNavigator
 import org.koin.android.ext.koin.androidContext
@@ -70,5 +68,17 @@ val dataModule = module {
     factory { FavoriteDbConvertor() }
 
     factory { PlaylistDbConvertor(get()) }
+
+    single<PlaylistTrackDao> {
+        get<AppDatabase>().playlistTrackDao()
+    }
+
+    single<PlaylistDao> {
+        get<AppDatabase>().playlistDao()
+    }
+
+    single<FavoriteDao> {
+        get<AppDatabase>().favoriteDao()
+    }
 
 }

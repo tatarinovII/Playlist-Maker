@@ -1,16 +1,14 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.media.MediaPlayer
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.favorite.domain.FavoriteInteractor
 import com.practicum.playlistmaker.player.models.PlayerState
-import com.practicum.playlistmaker.playlist.domain.Playlist
 import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
+import com.practicum.playlistmaker.playlist.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -148,7 +146,7 @@ class PlayerViewModel(
 
     fun addTrackToPlaylist(playlist: Playlist) {
         viewModelScope.launch {
-            playlistInteractor.addNewTrackToPlaylist(track.trackId, playlist)
+            playlistInteractor.addTrackToPlaylist(track, playlist)
             loadPlaylists()
         }
     }

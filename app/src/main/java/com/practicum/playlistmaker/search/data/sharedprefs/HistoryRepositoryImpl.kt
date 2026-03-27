@@ -1,14 +1,13 @@
 package com.practicum.playlistmaker.search.data.sharedprefs
 
-import com.practicum.playlistmaker.favorite.data.db.AppDatabase
+import com.practicum.playlistmaker.favorite.data.db.FavoriteDao
 import com.practicum.playlistmaker.search.data.StorageClient
-import com.practicum.playlistmaker.utils.Resource
 import com.practicum.playlistmaker.search.domain.HistoryRepository
 import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.utils.Resource
 
 class HistoryRepositoryImpl(
-    private val storage: StorageClient<ArrayList<Track>>,
-    private val appDatabase: AppDatabase
+    private val storage: StorageClient<ArrayList<Track>>, private val favoriteDao: FavoriteDao
 ) : HistoryRepository {
 
     override fun saveTrack(track: Track): Boolean {
@@ -31,7 +30,7 @@ class HistoryRepositoryImpl(
     override suspend fun getHistory(): Resource<List<Track>> {
         val data =
             storage.getData() ?: return Resource.Error("Ошибка получения данных в getHistory()")
-        val favoriteTracksIds = appDatabase.favoriteDao().getAllIds()
+        val favoriteTracksIds = favoriteDao.getAllIds()
         val newData = data.map {
             if (it.trackId in favoriteTracksIds) it.copy(isFavorite = true) else it
         }

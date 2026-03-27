@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.playlist.ui
+package com.practicum.playlistmaker.playlist.ui.rcview
 
 import android.net.Uri
 import android.view.View
@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.playlist.domain.Playlist
+import com.practicum.playlistmaker.playlist.domain.models.Playlist
 import java.io.File
 
 class PlaylistViewHolder(item: View) : RecyclerView.ViewHolder(item) {
@@ -17,7 +17,9 @@ class PlaylistViewHolder(item: View) : RecyclerView.ViewHolder(item) {
 
     fun bind(playlist: Playlist) {
         tvName.text = playlist.name
-        tvTracksCount.text = "${playlist.tracksIds.size} треков"
+        tvTracksCount.text = itemView.context.resources.getQuantityString(
+            R.plurals.tracks_count, playlist.tracksIds.size, playlist.tracksIds.size
+        )
         if (playlist.uri.isEmpty()) ivAlbumPhoto.setImageResource(R.drawable.ic_placeholder_album)
         else {
             val file = File(playlist.uri)

@@ -1,7 +1,6 @@
-package com.practicum.playlistmaker.playlist.ui
+package com.practicum.playlistmaker.playlist.ui.playlist
 
-import com.practicum.playlistmaker.favorite.ui.FavoriteState
-import com.practicum.playlistmaker.playlist.domain.Playlist
+import com.practicum.playlistmaker.playlist.domain.models.Playlist
 
 sealed class PlaylistState(val list: List<Playlist> = emptyList<Playlist>()) {
 

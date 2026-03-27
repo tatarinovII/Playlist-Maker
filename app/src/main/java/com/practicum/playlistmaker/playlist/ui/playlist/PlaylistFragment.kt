@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.playlist.ui
+package com.practicum.playlistmaker.playlist.ui.playlist
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
-import com.practicum.playlistmaker.favorite.ui.FavoriteFragment
+import com.practicum.playlistmaker.playlist.ui.rcview.PlaylistAdapter
 import org.koin.android.ext.android.inject
 
 class PlaylistFragment : Fragment() {

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.player.ui
+package com.practicum.playlistmaker.player.ui.rcview
 
 import android.net.Uri
 import android.view.View
@@ -7,7 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.playlist.domain.Playlist
+import com.practicum.playlistmaker.playlist.domain.models.Playlist
 import java.io.File
 
 class PlayerViewHolder(
@@ -29,7 +29,7 @@ class PlayerViewHolder(
             } else ivAlbumImage.setImageResource(R.drawable.ic_placeholder_album)
         }
         tvAlbumName.text = playlist.name
-        tvTracksCount.text = "${playlist.tracksIds.size} треков"
+        tvTracksCount.text = itemView.context.resources.getQuantityString(R.plurals.tracks_count, playlist.tracksIds.size, playlist.tracksIds.size)
         llTrack.setOnClickListener {
             onItemClick(playlist)
         }

@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.search.domain.impl.HistoryInteractorImpl
 import com.practicum.playlistmaker.favorite.domain.FavoriteInteractor
 import com.practicum.playlistmaker.favorite.domain.impl.FavoriteInteractorImpl
 import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
-import com.practicum.playlistmaker.playlist.domain.PlaylistInteractorImpl
+import com.practicum.playlistmaker.playlist.domain.impl.PlaylistInteractorImpl
 import com.practicum.playlistmaker.search.domain.TrackInteractor
 import com.practicum.playlistmaker.search.domain.impl.TracksInteractorImpl
 import com.practicum.playlistmaker.settings.domain.SettingsInteractor

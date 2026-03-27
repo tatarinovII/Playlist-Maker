@@ -16,7 +16,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.models.PlayerState
+import com.practicum.playlistmaker.player.ui.rcview.PlayerAdapter
 import com.practicum.playlistmaker.search.domain.models.Track
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
@@ -131,11 +133,18 @@ class PlayerFragment : Fragment() {
                 it.listOfPlaylists,
                 onItemClick = {
                     if (it.tracksIds.contains(track!!.trackId)) {
-                        Toast.makeText(requireContext(),"Трек уже добавлен в плейлист ${it.name}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.track_already_added, it.name),
+                            Toast.LENGTH_SHORT).show()
                         return@PlayerAdapter
                     }
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                    Toast.makeText(requireContext(),"Добавлено в плейлист ${it.name}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.added_to_playlist, it.name),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     vm.addTrackToPlaylist(it)
                 }
             )

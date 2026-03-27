@@ -1,10 +1,10 @@
-package com.practicum.playlistmaker.playlist.ui
+package com.practicum.playlistmaker.playlist.ui.rcview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.playlist.domain.Playlist
+import com.practicum.playlistmaker.playlist.domain.models.Playlist
 
 class PlaylistAdapter(
     private val list: List<Playlist>
