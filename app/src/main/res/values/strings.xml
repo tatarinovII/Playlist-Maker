@@ -22,4 +22,16 @@
     <string name="you_did_not_create_playlists">Вы не создали ни одного плейлиста</string>
     <string name="favorite_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="new_playlist_et_name">Название*</string>
+    <string name="description">Описание</string>
+    <string name="create">Создать</string>
+    <string name="track_already_added">Трек уже добавлен в плейлист %1$s</string>
+    <string name="added_to_playlist">Добавлено в плейлист %1$s</string>
+    <plurals name="tracks_count">
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
 </resources>

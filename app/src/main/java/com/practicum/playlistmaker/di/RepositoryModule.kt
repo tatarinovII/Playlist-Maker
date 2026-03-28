@@ -1,5 +1,9 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.favorite.data.FavoriteRepositoryImpl
+import com.practicum.playlistmaker.favorite.domain.FavoriteRepository
+import com.practicum.playlistmaker.playlist.data.PlaylistRepositoryImpl
+import com.practicum.playlistmaker.playlist.domain.PlaylistRepository
 import com.practicum.playlistmaker.search.data.TracksRepositoryImpl
 import com.practicum.playlistmaker.search.data.sharedprefs.HistoryRepositoryImpl
 import com.practicum.playlistmaker.search.domain.HistoryRepository
@@ -28,5 +32,13 @@ val repositoryModule = module {
 
     factory<SharingRepository> {
         SharingRepositoryImpl(androidContext())
+    }
+
+    single<PlaylistRepository> {
+        PlaylistRepositoryImpl(get(), get(), get(), get())
+    }
+
+    single<FavoriteRepository> {
+        FavoriteRepositoryImpl(get(), get())
     }
 }

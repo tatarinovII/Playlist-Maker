@@ -69,4 +69,28 @@
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="fontWeight">400</item>
     </style>
+    <style name="NewPlaylistEditTextTextStyle">
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontWeight">400</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:paddingVertical">18dp</item>
+    </style>
+    <style name="RoundedImageStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+    <style name="SmallRoundedImageStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">2dp</item>
+    </style>
+    <style name="DialogButtonStyle">
+        <item name="android:textColor">@color/blue</item>
+    </style>
+    <style name="PlaylistDialogTheme">
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogButtonStyle</item>
+    </style>
 </resources>
