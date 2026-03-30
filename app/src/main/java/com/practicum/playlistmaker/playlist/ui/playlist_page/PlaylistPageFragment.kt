@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -121,6 +122,13 @@ class PlaylistPageFragment : Fragment() {
             binding.ivPlaylistImageMenu.setImageResource(drawable.ic_placeholder_album)
         }
         adapter.list = listOfTracks
+        if (listOfTracks.isNotEmpty()) {
+            binding.rcView.isVisible = true
+            binding.tvEmptyList.isVisible = false
+        } else {
+            binding.rcView.isVisible = false
+            binding.tvEmptyList.isVisible = true
+        }
         binding.tvPlaylistNameInMenu.text = playlist.name
         binding.tvTracksCountInMenu.text = tracksCount
     }
@@ -150,7 +158,11 @@ class PlaylistPageFragment : Fragment() {
         }
 
         binding.ivShare.setOnClickListener {
-            viewModel.sharePlayList()
+            if (adapter.list.isNotEmpty()) viewModel.sharePlayList()
+            else {
+                Toast.makeText(requireContext(), "В данном плейлисте нет списка треков, которым можно поделиться",
+                    Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.ivBack.setOnClickListener {
@@ -167,7 +179,7 @@ class PlaylistPageFragment : Fragment() {
         binding.ll.post {
             val location = IntArray(2)
             binding.ll.getLocationInWindow(location)
-            val dotsBottom = location[1] + binding.ll.height
+            val dotsBottom = location[1]
 
             val screenHeight = requireContext().resources.displayMetrics.heightPixels
             val peekHeight = screenHeight - dotsBottom
@@ -177,7 +189,12 @@ class PlaylistPageFragment : Fragment() {
         }
 
         binding.tvSharePlaylist.setOnClickListener {
-            viewModel.sharePlayList()
+            if (adapter.list.isNotEmpty()) viewModel.sharePlayList()
+            else {
+                Toast.makeText(requireContext(), "В данном плейлисте нет списка треков, которым можно поделиться",
+                    Toast.LENGTH_SHORT).show()
+                menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }
         }
 
         binding.tvDeletePlaylist.setOnClickListener {

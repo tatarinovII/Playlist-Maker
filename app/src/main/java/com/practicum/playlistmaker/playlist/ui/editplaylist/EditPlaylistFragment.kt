@@ -48,8 +48,6 @@ class EditPlaylistFragment : NewPlaylistFragment() {
                     binding.ivPhotoPicker.setImageURI(uri)
                     binding.ivPhotoPicker.background = null
                     viewModel.saveImageToPrivateStorage(uri)
-                } else {
-                    Log.d("PhotoPicker", "No media selected")
                 }
             }
 

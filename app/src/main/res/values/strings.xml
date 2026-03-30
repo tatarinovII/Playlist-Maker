@@ -53,4 +53,5 @@
     <string name="wanna_delete_playlist">Хотите удалить плейлист «%1$s»?</string>
     <string name="no">Нет</string>
     <string name="yes">Да</string>
+    <string name="list_of_tracks_is_empty">Список треков пуст</string>
 </resources>
