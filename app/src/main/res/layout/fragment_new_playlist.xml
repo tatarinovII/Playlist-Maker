@@ -34,10 +34,18 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivPhotoPicker"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scaleType="fitXY"
+                android:background="@drawable/new_playlist_image_background"
+                app:shapeAppearanceOverlay="@style/RoundedImageStyle"/>
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivPhotoPickerIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:scaleType="centerCrop"
                 android:background="@drawable/new_playlist_image_background"
                 android:src="@drawable/ic_photo_picker"
                 app:shapeAppearanceOverlay="@style/RoundedImageStyle"/>

@@ -16,4 +16,13 @@ interface PlaylistInteractor {
 
     suspend fun saveImageToPrivateStorage(uri: Uri): File
 
+    suspend fun getPlaylistById(playlistId: Long): Playlist
+
+    suspend fun getAllTracksInPlaylist(playlist: Playlist): Flow<List<Track>>
+
+    suspend fun deleteTrackFromPlaylist(playlist: Playlist, track: Track)
+
+    suspend fun deletePlaylist(playlist: Playlist)
+
+    suspend fun editPlaylist(playlist: Playlist)
 }

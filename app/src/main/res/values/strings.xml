@@ -28,10 +28,29 @@
     <string name="create">Создать</string>
     <string name="track_already_added">Трек уже добавлен в плейлист %1$s</string>
     <string name="added_to_playlist">Добавлено в плейлист %1$s</string>
+    <string name="want_to_delet_track">Хотите удалить трек?</string>
+    <string name="all_unsaved_data_wil_be_deleted">Все несохраненные данные будут потеряны</string>
+    <string name="finish">Завершить</string>
+    <string name="cancel">Отмена</string>
     <plurals name="tracks_count">
         <item quantity="one">%d трек</item>
         <item quantity="few">%d трека</item>
         <item quantity="many">%d треков</item>
         <item quantity="other">%d треков</item>
     </plurals>
+    <plurals name="mins">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
+    <string name="track_info">%1$d. %2$s - %3$s (%4$s)</string>
+    <string name="edit">Редактировать</string>
+    <string name="save">Сохранить</string>
+    <string name="share">Поделиться</string>
+    <string name="edit_playlist">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="wanna_delete_playlist">Хотите удалить плейлист «%1$s»?</string>
+    <string name="no">Нет</string>
+    <string name="yes">Да</string>
 </resources>

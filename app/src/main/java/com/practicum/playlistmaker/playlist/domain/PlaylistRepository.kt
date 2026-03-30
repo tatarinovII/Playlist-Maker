@@ -15,4 +15,15 @@ interface PlaylistRepository {
     suspend fun addTrackToPlaylist(track: Track, playlist: Playlist)
 
     suspend fun saveImageToPrivateStorage(uri: Uri): File
+
+    suspend fun getPlaylistById(playlistId: Long): Playlist
+
+    suspend fun getTrackById(trackId: Long): Track
+
+    suspend fun deleteTrackFromPlaylist(track: Track, playlist: Playlist)
+
+    suspend fun deletePlaylist(playlist: Playlist)
+
+    suspend fun updatePlaylist(playlist: Playlist)
+
 }

@@ -14,7 +14,11 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackViewHolder(item: View, private val onItemClick: (Track) -> Unit) :
+class TrackViewHolder(
+    item: View,
+    private val onItemClick: (Track) -> Unit,
+    private val onItemLongClicked: (Track) -> Unit
+) :
     RecyclerView.ViewHolder(item) {
 
     private val image: ImageView = item.findViewById(R.id.ivAlbum)
@@ -33,6 +37,10 @@ class TrackViewHolder(item: View, private val onItemClick: (Track) -> Unit) :
             .placeholder(R.drawable.ic_placeholder_album).into(image)
         llTrack.setOnClickListener {
             onItemClick(track)
+        }
+        llTrack.setOnLongClickListener {
+            onItemLongClicked(track)
+            true
         }
     }
 

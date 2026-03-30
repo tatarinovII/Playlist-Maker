@@ -15,19 +15,19 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 
-class NewPlaylistViewModel(
+open class NewPlaylistViewModel(
     private val application: Application,
     private val interactor: PlaylistInteractor
 ) : AndroidViewModel(application) {
-    private val imageUri = MutableLiveData<String>("")
+    protected val imageUri = MutableLiveData<String>("")
 
-    fun saveImageToPrivateStorage(uri: Uri) {
+    open fun saveImageToPrivateStorage(uri: Uri) {
         viewModelScope.launch {
             imageUri.value = interactor.saveImageToPrivateStorage(uri).absolutePath
         }
     }
 
-    fun savePlaylist(
+    open fun savePlaylist(
         name: String,
         description: String
     ) {

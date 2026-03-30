@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.practicum.playlistmaker.databinding.FragmentPlaylistBinding
+import com.practicum.playlistmaker.playlist.ui.playlist_page.PlaylistPageFragment
 import com.practicum.playlistmaker.playlist.ui.rcview.PlaylistAdapter
 import org.koin.android.ext.android.inject
 
@@ -32,7 +33,13 @@ class PlaylistFragment : Fragment() {
         viewModel.observePlaylistState().observe(viewLifecycleOwner) {
             when(it) {
                 is PlaylistState.Default -> {
-                    binding.rvPlaylists.adapter = PlaylistAdapter(it.list)
+                    binding.rvPlaylists.adapter = PlaylistAdapter(
+                        it.list,
+                        onItemClicked = { playlistId ->
+                            findNavController().navigate(R.id.action_libraryFragment_to_playlistPageFragment,
+                                PlaylistPageFragment.createArgs(playlistId))
+                        },
+                    )
                     binding.rvPlaylists.isVisible = true
                     binding.tvEmptyPlaylistPage.isVisible = false
                 }

@@ -3,17 +3,19 @@ package com.practicum.playlistmaker.playlist.ui.rcview
 import android.net.Uri
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.playlist.domain.models.Playlist
 import java.io.File
 
-class PlaylistViewHolder(item: View) : RecyclerView.ViewHolder(item) {
+class PlaylistViewHolder(item: View, private val onItemClicked: (Long) -> Unit) : RecyclerView.ViewHolder(item) {
 
     private val tvName: TextView = item.findViewById(R.id.tvPlaylistName)
     private val tvTracksCount: TextView = item.findViewById(R.id.tvTracksCount)
     private val ivAlbumPhoto: ImageView = item.findViewById(R.id.ivAlbumImage)
+    private val ll: LinearLayout = item.findViewById(R.id.ll)
 
     fun bind(playlist: Playlist) {
         tvName.text = playlist.name
@@ -26,6 +28,9 @@ class PlaylistViewHolder(item: View) : RecyclerView.ViewHolder(item) {
             if (file.exists()) {
                 ivAlbumPhoto.setImageURI(Uri.fromFile(file))
             } else ivAlbumPhoto.setImageResource(R.drawable.ic_placeholder_album)
+        }
+        ll.setOnClickListener {
+            onItemClicked(playlist.id)
         }
     }
 

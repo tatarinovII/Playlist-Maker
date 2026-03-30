@@ -37,24 +37,25 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TrackAdapter { track ->
-            viewModel.addTrackToHistory(track)
-
-            findNavController().navigate(
-                R.id.action_searchFragment_to_playerFragment, PlayerFragment.createArgs(track)
-            )
-        }
+        adapter = TrackAdapter(
+            onItemClick = { track ->
+                viewModel.addTrackToHistory(track)
+                findNavController().navigate(
+                    R.id.action_searchFragment_to_playerFragment, PlayerFragment.createArgs(track)
+                )
+            }, {}
+        )
 
         binding.rcView.layoutManager = LinearLayoutManager(requireContext())
         binding.rcView.adapter = adapter
 
-        historyAdapter = TrackAdapter { item ->
+        historyAdapter = TrackAdapter( { item ->
             viewModel.addTrackToHistory(item)
 
             findNavController().navigate(
                 R.id.action_searchFragment_to_playerFragment, PlayerFragment.createArgs(item)
             )
-        }
+        },{})
 
         binding.rvSearchHistory.layoutManager = LinearLayoutManager(requireContext())
         binding.rvSearchHistory.adapter = historyAdapter

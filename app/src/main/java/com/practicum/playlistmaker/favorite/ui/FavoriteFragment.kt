@@ -28,12 +28,12 @@ class FavoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = TrackAdapter { track ->
+        val adapter = TrackAdapter ({ track ->
             track.isFavorite = true
             findNavController().navigate(
                 R.id.action_libraryFragment_to_playerFragment, PlayerFragment.createArgs(track)
             )
-        }
+        }, {})
         binding.rcView.layoutManager = LinearLayoutManager(requireContext())
         binding.rcView.adapter = adapter
         viewModel.observeFavoriteState().observe(viewLifecycleOwner) {
