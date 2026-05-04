@@ -14,7 +14,7 @@
         android:layout_height="45dp"
         android:layout_marginVertical="8dp"
         tool:src="@drawable/ic_placeholder_album"
-        android:scaleType="centerCrop"
+        android:scaleType="fitXY"
         app:shapeAppearanceOverlay="@style/SmallRoundedImageStyle"/>
 
     <LinearLayout

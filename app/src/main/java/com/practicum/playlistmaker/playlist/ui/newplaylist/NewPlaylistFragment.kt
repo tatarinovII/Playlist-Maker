@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -18,10 +19,10 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
 
-    private val viewModel: NewPlaylistViewModel by viewModel()
-    private lateinit var binding: FragmentNewPlaylistBinding
+   open val viewModel: NewPlaylistViewModel by viewModel()
+    protected lateinit var binding: FragmentNewPlaylistBinding
     private var photoSelected = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -65,6 +66,7 @@ class NewPlaylistFragment : Fragment() {
                     photoSelected = true
                     binding.ivPhotoPicker.setImageURI(uri)
                     binding.ivPhotoPicker.background = null
+                    binding.ivPhotoPickerIcon.isVisible = false
                     viewModel.saveImageToPrivateStorage(uri)
                 } else {
                     Log.d("PhotoPicker", "No media selected")
@@ -89,7 +91,7 @@ class NewPlaylistFragment : Fragment() {
         }
     }
 
-    private fun tryBack(photoSelected: Boolean) {
+    protected open fun tryBack(photoSelected: Boolean) {
         if (photoSelected || binding.etName.text.isNotEmpty() || binding.etDescription.text.isNotEmpty()) {
             MaterialAlertDialogBuilder(
                 requireContext(), R.style.PlaylistDialogTheme

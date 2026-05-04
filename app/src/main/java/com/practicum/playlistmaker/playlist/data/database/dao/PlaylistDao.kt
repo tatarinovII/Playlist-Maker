@@ -1,11 +1,13 @@
 package com.practicum.playlistmaker.playlist.data.database.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.practicum.playlistmaker.playlist.data.database.models.PlaylistEntity
+import com.practicum.playlistmaker.playlist.domain.models.Playlist
 
 @Dao
 interface PlaylistDao {
@@ -19,4 +21,9 @@ interface PlaylistDao {
     @Update
     suspend fun updatePlaylist(playlist: PlaylistEntity)
 
+    @Query("SELECT * FROM playlists WHERE id = :playlistId")
+    suspend fun getPlaylistById(playlistId: Long): PlaylistEntity
+
+    @Delete
+    suspend fun deletePlaylist(playlist: PlaylistEntity)
 }

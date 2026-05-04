@@ -7,13 +7,14 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.playlist.domain.models.Playlist
 
 class PlaylistAdapter(
-    private val list: List<Playlist>
+    private val list: List<Playlist>,
+    private val onItemClicked: (Long) -> Unit
 ) : RecyclerView.Adapter<PlaylistViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): PlaylistViewHolder {
         val item = LayoutInflater.from(parent.context).inflate(R.layout.item_playlist_for_playlist_fragment, parent, false)
-        return PlaylistViewHolder(item)
+        return PlaylistViewHolder(item, onItemClicked)
     }
 
     override fun onBindViewHolder(
