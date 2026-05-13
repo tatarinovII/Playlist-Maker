@@ -90,16 +90,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTrackArtistName" />
 
-            <ImageButton
+            <com.practicum.playlistmaker.player.ui.PlaybackButtonView
                 android:id="@+id/ibPlay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_button_play"
+                app:imagePlay="@drawable/ic_button_play"
+                app:imagePause="@drawable/ic_pause_button"
                 app:layout_constraintBottom_toBottomOf="@id/imAddToQueue"
                 app:layout_constraintEnd_toStartOf="@id/ibLike"
                 app:layout_constraintStart_toEndOf="@id/imAddToQueue"
-                app:layout_constraintTop_toTopOf="@id/imAddToQueue" />
+                app:layout_constraintTop_toTopOf="@id/imAddToQueue"
+                />
 
             <ImageButton
                 android:id="@+id/ibLike"

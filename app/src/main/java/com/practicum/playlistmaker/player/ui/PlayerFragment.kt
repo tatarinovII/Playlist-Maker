@@ -122,6 +122,7 @@ class PlayerFragment : Fragment() {
 
         binding.ibPlay.setOnClickListener {
             viewModel.onPlayButtonClicked()
+            binding.ibPlay.changeState()
         }
 
         binding.rvPlaylists.layoutManager = LinearLayoutManager(requireContext())
@@ -150,12 +151,9 @@ class PlayerFragment : Fragment() {
             )
             if (it.isFavorite) binding.ibLike.setImageResource(R.drawable.ic_liked) else binding.ibLike.setImageResource(R.drawable.ic_unliked)
             when (it) {
-                is PlayerState.Playing -> {
-                    binding.ibPlay.setImageResource(R.drawable.ic_pause_button)
-                }
 
-                is PlayerState.Paused, is PlayerState.Prepared -> {
-                    binding.ibPlay.setImageResource(R.drawable.ic_button_play)
+                is PlayerState.Prepared -> {
+                    binding.ibPlay.setPlayImageAfterEnd()
                 }
 
                 else -> {}
