@@ -1,11 +1,17 @@
 package com.practicum.playlistmaker.player.ui
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -36,6 +42,31 @@ class PlayerFragment : Fragment() {
     }
     private lateinit var viewModel: PlayerViewModel
 
+    private val serviceConnection = object: ServiceConnection {
+        override fun onServiceConnected(
+            name: ComponentName?,
+            service: IBinder?
+        ) {
+            val binder = service as MusicService.MusicServiceBinder
+            viewModel.setAudioPlayerControl(binder.getService())
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            viewModel.removeAudioPlayerControl()
+        }
+
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        if (it) {
+            bindMusicService()
+        } else {
+            Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -51,6 +82,12 @@ class PlayerFragment : Fragment() {
         }
 
         viewModel = vm
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            bindMusicService()
+        }
 
         if (track != null) {
             try {
@@ -169,10 +206,36 @@ class PlayerFragment : Fragment() {
         }
     }
 
+    private fun bindMusicService() {
+        val intent = Intent(requireContext(), MusicService::class.java).apply {
+            putExtra("song_url", track?.previewUrl)
+            putExtra("is_favorite", track?.isFavorite)
+            putExtra("artist_name", track?.artistName)
+            putExtra("song_name", track?.trackName)
+        }
+        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    private fun unbindMusicService() {
+        requireContext().unbindService(serviceConnection)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindMusicService()
+    }
+
     override fun onPause() {
         super.onPause()
-        viewModel.pausePlayer()
+        viewModel.showNotification()
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.hideNotification()
+    }
+
+
 
     companion object {
         private const val ARGS_PLAYER = "TRACK"
