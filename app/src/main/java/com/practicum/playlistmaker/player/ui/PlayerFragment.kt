@@ -24,7 +24,6 @@ import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.models.PlayerState
 import com.practicum.playlistmaker.player.ui.rcview.PlayerAdapter
 import com.practicum.playlistmaker.search.domain.models.Track
-import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
@@ -42,17 +41,21 @@ class PlayerFragment : Fragment() {
     }
     private lateinit var viewModel: PlayerViewModel
 
-    private val serviceConnection = object: ServiceConnection {
+    private var isBound = false
+
+    private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(
             name: ComponentName?,
             service: IBinder?
         ) {
             val binder = service as MusicService.MusicServiceBinder
             viewModel.setAudioPlayerControl(binder.getService())
+            isBound = true
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
             viewModel.removeAudioPlayerControl()
+            isBound = false
         }
 
     }
@@ -60,11 +63,7 @@ class PlayerFragment : Fragment() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) {
-        if (it) {
-            bindMusicService()
-        } else {
-            Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-        }
+
     }
 
     override fun onCreateView(
@@ -85,9 +84,9 @@ class PlayerFragment : Fragment() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            bindMusicService()
         }
+
+        bindMusicService()
 
         if (track != null) {
             try {
@@ -136,13 +135,15 @@ class PlayerFragment : Fragment() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         binding.overlay.isVisible = true
                         vm.loadPlaylists()
                     }
+
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         binding.overlay.isVisible = false
                     }
@@ -174,7 +175,8 @@ class PlayerFragment : Fragment() {
                         Toast.makeText(
                             requireContext(),
                             getString(R.string.track_already_added, it.name),
-                            Toast.LENGTH_SHORT).show()
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@PlayerAdapter
                     }
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -186,7 +188,9 @@ class PlayerFragment : Fragment() {
                     vm.addTrackToPlaylist(it)
                 }
             )
-            if (it.isFavorite) binding.ibLike.setImageResource(R.drawable.ic_liked) else binding.ibLike.setImageResource(R.drawable.ic_unliked)
+            if (it.isFavorite) binding.ibLike.setImageResource(R.drawable.ic_liked) else binding.ibLike.setImageResource(
+                R.drawable.ic_unliked
+            )
             when (it) {
 
                 is PlayerState.Prepared -> {
@@ -213,11 +217,14 @@ class PlayerFragment : Fragment() {
             putExtra("artist_name", track?.artistName)
             putExtra("song_name", track?.trackName)
         }
-        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        isBound = requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     private fun unbindMusicService() {
-        requireContext().unbindService(serviceConnection)
+        if (isBound) {
+            requireContext().unbindService(serviceConnection)
+            isBound = false
+        }
     }
 
     override fun onDestroy() {
@@ -234,7 +241,6 @@ class PlayerFragment : Fragment() {
         super.onResume()
         viewModel.hideNotification()
     }
-
 
 
     companion object {

@@ -1,11 +1,13 @@
 package com.practicum.playlistmaker.player.ui
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.media.MediaPlayer
 import android.os.Binder
@@ -13,6 +15,8 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
+import com.markodevcic.peko.PermissionResult
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.models.PlayerState
 import kotlinx.coroutines.CoroutineScope
@@ -104,6 +108,7 @@ class MusicService : Service(), AudioPlayerControl {
 
     override fun showNotification() {
         if (mediaPlayer?.isPlaying == false) return
+        if (!checkPermission()) return
         ServiceCompat.startForeground(
             this,
             100,
@@ -167,6 +172,17 @@ class MusicService : Service(), AudioPlayerControl {
 
     private companion object {
         const val NOTIFICATION_CHANNEL_ID = "my_channel_id"
+    }
+
+    private fun checkPermission() : Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
     }
 
 }
