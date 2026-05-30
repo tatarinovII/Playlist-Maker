@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -13,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.PlaylistMaker"
         tools:targetApi="31">
+        <service android:name=".player.ui.MusicService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback"/>
         <activity
             android:name=".home.ui.MainActivity"
             android:exported="true"
