@@ -3,11 +3,12 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "com.practicum.playlistmaker"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.practicum.playlistmaker"
@@ -37,6 +38,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 }
 
@@ -47,6 +49,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+    implementation(libs.androidx.ui.tooling.preview)
     annotationProcessor (libs.compiler)
     implementation(libs.androidx.fragment.ktx)
     implementation (libs.retrofit)
@@ -68,6 +71,19 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
     // Поддержка Kotlin Extensions и Coroutines (Flow, suspend)
     implementation("androidx.room:room-ktx:$room_version")
+
+
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.material3)
+    implementation(libs.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("androidx.compose.runtime:runtime-livedata")
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 
     implementation(libs.peko)
 }
