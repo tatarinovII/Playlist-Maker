@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.favorite.ui.FavoriteViewModel
 import com.practicum.playlistmaker.player.ui.PlayerViewModel
 import com.practicum.playlistmaker.playlist.ui.editplaylist.EditPlayListViewModel
 import com.practicum.playlistmaker.playlist.ui.newplaylist.NewPlaylistViewModel
-import com.practicum.playlistmaker.playlist.ui.playlist.PlaylistViewModel
+import com.practicum.playlistmaker.library.ui.playlist.PlaylistViewModel
 import com.practicum.playlistmaker.playlist.ui.playlist_page.PlaylistPageViewModel
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.SearchViewModel

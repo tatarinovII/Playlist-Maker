@@ -1,9 +1,11 @@
-package com.practicum.playlistmaker.playlist.ui.playlist
+package com.practicum.playlistmaker.library.ui.playlist
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.playlist.domain.PlaylistInteractor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PlaylistViewModel(
@@ -14,16 +16,15 @@ class PlaylistViewModel(
         getAllPlaylists()
     }
 
-    private val _state = MutableLiveData<PlaylistState>()
-    fun observePlaylistState(): MutableLiveData<PlaylistState> = _state
+    private val _state = MutableStateFlow<PlaylistState>(PlaylistState.Loading)
+    val state: StateFlow<PlaylistState> = _state.asStateFlow()
 
     fun getAllPlaylists() {
         viewModelScope.launch {
             interactor.getAllPlaylists().collect { playlists ->
-                if (playlists.isEmpty()) _state.postValue(PlaylistState.Empty())
-                else _state.postValue(PlaylistState.Default(playlists))
+                _state.value = if (playlists.isEmpty()) PlaylistState.Empty
+                else PlaylistState.Default(playlists)
             }
         }
     }
-
 }

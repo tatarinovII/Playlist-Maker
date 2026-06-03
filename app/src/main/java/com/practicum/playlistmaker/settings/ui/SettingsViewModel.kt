@@ -16,9 +16,6 @@ class SettingsViewModel(
 
     private val switchStateLiveData = MutableLiveData<Boolean>()
     fun observeSwitchState(): MutableLiveData<Boolean> = switchStateLiveData
-    fun getSwitchState(): Boolean {
-        return settingsInteractor.getThemeSettings().darkTheme
-    }
 
     init {
         switchStateLiveData.value = settingsInteractor.getThemeSettings().darkTheme

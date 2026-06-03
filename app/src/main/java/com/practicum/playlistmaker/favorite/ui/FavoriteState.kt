@@ -2,8 +2,9 @@ package com.practicum.playlistmaker.favorite.ui
 
 import com.practicum.playlistmaker.search.domain.models.Track
 
-sealed class FavoriteState(val tracks: List<Track> = emptyList<Track>()) {
+sealed interface FavoriteState {
 
-    class Default(tracks: List<Track>) : FavoriteState(tracks)
-    class Empty() : FavoriteState(emptyList())
+    data class Default(val tracks: List<Track>) : FavoriteState
+    data object Loading : FavoriteState
+    data object Empty : FavoriteState
 }
